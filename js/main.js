@@ -233,7 +233,7 @@ function SetSettingsFromActiveElement()
 			break;
 		case (ElementMirrorCurved):
 			labelElementSelected.innerHTML = "Curved Mirror";
-			setSettingsWidget(0, "Radius", simulation.activeElement.radius, 1, 500);
+			setSettingsWidget(0, "Radius", simulation.activeElement.radius, 1, 1000);
 			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
 			setSettingsWidget(2, "Arc Angle", simulation.activeElement.arcAngle, 5, 360);
 			break;
@@ -271,35 +271,35 @@ function OnElementSlideSettingsChanged()
 		case(ElementInvalid):
 			break;
 		case (ElementSourcePoint):
-			simulation.activeElement.numberRays = listSettings[0].range.value;
+			simulation.activeElement.numberRays = parseInt(listSettings[0].range.value);
 			break;
 		case (ElementSourceBeam):
-			simulation.activeElement.numberRays = listSettings[0].range.value;
-			simulation.activeElement.length = listSettings[1].range.value;
+			simulation.activeElement.numberRays = parseInt(listSettings[0].range.value);
+			simulation.activeElement.length = parseInt(listSettings[1].range.value);
 			simulation.activeElement.setAngle(listSettings[2].range.value);
 			break;
 		case (ElementMirrorFlat):
-			simulation.activeElement.length = listSettings[0].range.value;
+			simulation.activeElement.length = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
 			break;
 		case (ElementMirrorCurved):
-			simulation.activeElement.radius = listSettings[0].range.value;
+			simulation.activeElement.radius = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.arcAngle = listSettings[2].range.value;
+			simulation.activeElement.arcAngle = parseInt(listSettings[2].range.value);
 			break;
 		case (ElementLensConverging):
-			simulation.activeElement.radius = listSettings[0].range.value;
+			simulation.activeElement.length = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.arcAngle = listSettings[2].range.value;
+			simulation.activeElement.arcAngle = parseInt(listSettings[2].range.value);
 			break;
 		case (ElementLensDiverging):
-			simulation.activeElement.length = listSettings[0].range.value;
+			simulation.activeElement.length = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.focalLength = listSettings[2].range.value;
+			simulation.activeElement.focalLength = parseInt(listSettings[2].range.value);
 			break;
 		case (ElementBlocker):
-			simulation.activeElement.length = listSettings[0].range.value;
-			simulation.activeElement.setAngle(listSettings[1].range.value);
+			simulation.activeElement.length = parseInt(listSettings[0].range.value);
+			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
 			break;
 	}
 

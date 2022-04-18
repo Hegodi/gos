@@ -25,23 +25,8 @@ function intersectionLineVsLine(p0, p1, p2, p3, onlyInside)
 	return null;
 }
 
-function intersectionLineVsCircle(p0, p1, C, r)
+function intersectionLineVsCircle(p0, p1, C, r, nX, nY, arcAngle)
 {
-
-// E is the starting point of the ray,
-// L is the end point of the ray,
-// C is the center of sphere you're testing against
-// r is the radius of that sphere
-// Compute:
-// d = L - E ( Direction vector of ray, from start to end )
-// f = E - C ( Vector from center sphere to ray start )
-// float a = d.Dot( d ) ;
-// float b = 2*f.Dot( d ) ;
-// float c = f.Dot( f ) - r*r ;
-// float discriminant = b*b-4*a*c;
-// float t1 = (-b - discriminant)/(2*a);
-// float t2 = (-b + discriminant)/(2*a);
-
 	let d = {x: p1.x - p0.x, y: p1.y - p0.y};
 	let f = {x: p0.x - C.x, y:p0.y - C.y};
 
@@ -59,37 +44,75 @@ function intersectionLineVsCircle(p0, p1, C, r)
 	let t1 = (-b - discriminant)/(2*a);
 	let t2 = (-b + discriminant)/(2*a);
 
-	let t = -1;
-	if (t1 > 0.0 && t2 > 0.0)
+	let bounce1 = {t: t1, x: p0.x + t1*d.x, y: p0.y + t1*d.y};
+	let bounce2 = {t: t2, x: p0.x + t2*d.x, y: p0.y + t2*d.y};
+
+	let dotMin = Math.cos(arcAngle * 0.5 * Math.PI / 180);
+
+	if (bounce1.t > 0.0)
 	{
-		t = t1 < t2 ? t1 : t2;
-	}
-	else
-	{
-		if (t1 > 0.0)
+		let br = {x: (bounce1.x - C.x)/r, y: (bounce1.y - C.y)/r}
+		let dot = br.x * nX + br.y * nY;
+		if (dot < dotMin)
 		{
-			t = t1;
-		}
-		else if (t2 > 0.0)
-		{
-			t = t2;
+			bounce1.t = -1;
 		}
 	}
 
-	if (t > 0.0)
+	if (bounce2.t > 0.0)
 	{
-		return {t: t, x:p0.x + t*d.x, y:p1.y + t*d.y};
+		let br = {x: (bounce2.x - C.x)/r, y: (bounce2.y - C.y)/r}
+		let dot = br.x * nX + br.y * nY;
+		if (dot < dotMin)
+		{
+			bounce2.t = -1;
+		}
+	}
+
+	if (bounce1.t > 0.0 && bounce2.t > 0.0)
+	{
+		if (bounce1.t < bounce2.t)
+		{
+			return bounce1;
+		}
+		else
+		{
+			return bounce2;
+		}
+	}
+	else
+	{
+		if (bounce1.t > 0.0)
+		{
+			return bounce1;
+		}
+		else if (bounce2.t > 0.0)
+		{
+			return bounce2;
+		}
 	}
 	return null;
 }
 
 
-function calculateReflection(rayDir, element)
+function calculateReflectionFlat(rayDir, element)
 {
     let tanCmp = rayDir.x * element.tangentX + rayDir.y * element.tangentY;
     let norCmp = rayDir.x * element.normalX + rayDir.y * element.normalY;
 
     return {x: tanCmp * element.tangentX - norCmp * element.normalX, y: tanCmp * element.tangentY - norCmp * element.normalY};
+}
+
+function calculateReflectionCurved(rayDir, bounce, element)
+{
+	let center = element.GetCenter();
+	let normal = {x: (center.x - bounce.x)/element.radius, y: (center.y - bounce.y)/element.radius};
+	let tangent = {x: normal.y, y: -normal.x}
+
+    let tanCmp = rayDir.x * tangent.x + rayDir.y * tangent.y;
+    let norCmp = rayDir.x * normal.x + rayDir.y * normal.y;
+
+    return {x: tanCmp * tangent.x - norCmp * normal.x, y: tanCmp * tangent.y - norCmp * normal.y};
 }
 
 function calculateLens(rayDir, hitPos, lens, diverging)
@@ -162,7 +185,7 @@ class OrientableElement
 	{
 		this.x = x;
 		this.y = y;
-		this.angle = 0;
+		this.angle = 0.0;
 		this.normalX = 0;
 		this.normalY = 0;
 		this.tangentX = 0;
@@ -172,9 +195,11 @@ class OrientableElement
 
 	setAngle(angle)
 	{
+		angle = parseFloat(angle);
+		//console.log("Set Angle: " + angle.toString() + " this.angle: " + this.angle.toString());
 		this.angle = angle;
 		if (this.angle > 360.0) this.angle -= 360.0;
-		else if (this.angle < 0.0) this.Math += 360.0;
+		else if (this.angle < 0.0) this.angle += 360.0;
 		let angleRad = angle * Math.PI / 180.0;
 		this.normalX = Math.cos(angleRad);
 		this.normalY = Math.sin(angleRad);
@@ -278,7 +303,7 @@ class SurfaceCurved extends OrientableElement
 	{
 		super(x,y)
 		this.radius = radius;
-		this.arcAngle = arcAngle
+		this.arcAngle = arcAngle;
 		if (mirror)
 		{
         	this.elementType = ElementMirrorCurved;
@@ -288,6 +313,18 @@ class SurfaceCurved extends OrientableElement
 	GetData()
 	{
 		return super.GetData() + ";" + this.radius.toString() + ";" + this.arcAngle.toString();
+	}
+
+	GetArcAngles()
+	{
+		return {min: this.angle - parseFloat(this.arcAngle/2), max: this.angle + parseFloat(this.arcAngle/2)};
+	}
+
+	GetCenter()
+	{
+    	let cx = this.x - this.normalX * this.radius;
+    	let cy = this.y - this.normalY * this.radius;
+		return {x: cx, y: cy};
 	}
 
 	SetFromData(data)

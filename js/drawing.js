@@ -12,17 +12,22 @@ function DrawMirroFlat(context, mirror, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#550000"
+		context.fillStyle = context.strokeStyle = "#550000"
 	}
 	else
 	{
-		context.strokeStyle = "#CC0000"
+		context.fillStyle = context.strokeStyle = "#CC0000"
 	}
 	context.lineWidth = 3;
 	context.beginPath();
 	context.moveTo(mirror.x - mirror.tangentX * mirror.length * 0.5, mirror.y - mirror.tangentY * mirror.length * 0.5);
 	context.lineTo(mirror.x + mirror.tangentX * mirror.length * 0.5, mirror.y + mirror.tangentY * mirror.length * 0.5);
 	context.stroke();
+	context.closePath();
+
+	context.beginPath();
+	context.arc(mirror.x, mirror.y, 4, 0, 2*Math.PI);
+	context.fill();
 	context.closePath();
 }
 
@@ -30,17 +35,26 @@ function DrawMirroCurved(context, mirror, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#550000"
+		context.fillStyle = context.strokeStyle = "#550000"
 	}
 	else
 	{
-		context.strokeStyle = "#CC0000"
+		context.fillStyle = context.strokeStyle = "#CC0000"
 	}
+
+    let angle0 = mirror.angle - mirror.arcAngle/2;
+    let angle1 = mirror.angle + mirror.arcAngle/2;
+
+    let center = mirror.GetCenter();
 	context.lineWidth = 3;
 	context.beginPath();
-	//context.arc(mirror.x, mirror.y, mirror.radius, (mirror.angle - mirror.arcAngle/2) * Math.PI / 180.0, (mirror.angle + mirror.arcAngle/2) * Math.PI / 180.0);
-	context.arc(mirror.x, mirror.y, mirror.radius, mirror.angle * Math.PI / 180.0, (mirror.angle + mirror.arcAngle) * Math.PI / 180.0);
+	context.arc(center.x, center.y, mirror.radius, angle0 * Math.PI / 180.0, angle1 * Math.PI / 180.0);
 	context.stroke();
+	context.closePath();
+
+	context.beginPath();
+	context.arc(mirror.x, mirror.y, 4, 0, 2*Math.PI);
+	context.fill();
 	context.closePath();
 }
 
@@ -48,11 +62,11 @@ function DrawBloquer(context, mirror, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#555555"
+		context.fillStyle = context.strokeStyle = "#555555"
 	}
 	else
 	{
-		context.strokeStyle = "#FFFFFF"
+		context.fillStyle = context.strokeStyle = "#FFFFFF"
 	}
 	context.lineWidth = 3;
 	context.beginPath();
@@ -60,17 +74,22 @@ function DrawBloquer(context, mirror, ghost)
 	context.lineTo(mirror.x + mirror.tangentX * mirror.length * 0.5, mirror.y + mirror.tangentY * mirror.length * 0.5);
 	context.stroke();
 	context.closePath();
+
+	context.beginPath();
+	context.arc(mirror.x, mirror.y, 4, 0, 2*Math.PI);
+	context.fill();
+	context.closePath();
 }
 
 function DrawSourcePoint(context, source, ghost)
 {
 	if (ghost)
 	{
-		context.fillStyle = "#555500"
+		context.fillStyle = context.strokeStyle = "#555500"
 	}
 	else
 	{
-		context.fillStyle = "#FFFF00"
+		context.fillStyle = context.strokeStyle = "#FFFF00"
 	}
 	context.beginPath();
 	context.arc(source.x, source.y, 5, 0, Math.PI*2, false);
@@ -82,11 +101,11 @@ function DrawSourceBeam(context, source, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#555500"
+		context.fillStyle = context.strokeStyle = "#555500"
 	}
 	else
 	{
-		context.strokeStyle = "#FFFF00"
+		context.fillStyle = context.strokeStyle = "#FFFF00"
 	}
 	context.lineWidth = 2;
 	context.beginPath();
@@ -94,17 +113,22 @@ function DrawSourceBeam(context, source, ghost)
 	context.lineTo(source.x + source.tangentX * source.length * 0.5, source.y + source.tangentY * source.length * 0.5);
 	context.stroke();
 	context.closePath();
+
+	context.beginPath();
+	context.arc(source.x, source.y, 4, 0, 2*Math.PI);
+	context.fill();
+	context.closePath();
 }
 
 function DrawLensConverging(context, lens, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#228822"
+		context.fillStyle = context.strokeStyle = "#228822"
 	}
 	else
 	{
-		context.strokeStyle = "#66FF66"
+		context.fillStyle = context.strokeStyle = "#66FF66"
 	}
 	let p0 = {x: lens.x - lens.tangentX * lens.length * 0.5, y: lens.y - lens.tangentY * lens.length * 0.5}
 	let p1 = {x: lens.x + lens.tangentX * lens.length * 0.5, y: lens.y + lens.tangentY * lens.length * 0.5}
@@ -127,17 +151,22 @@ function DrawLensConverging(context, lens, ghost)
 
 	context.stroke();
 	context.closePath();
+
+	context.beginPath();
+	context.arc(lens.x, lens.y, 4, 0, 2*Math.PI);
+	context.fill();
+	context.closePath();
 }
 
 function DrawLensDiverging(context, lens, ghost)
 {
 	if (ghost)
 	{
-		context.strokeStyle = "#222288"
+		context.fillStyle = context.strokeStyle = "#222288"
 	}
 	else
 	{
-		context.strokeStyle = "#6666FF"
+		context.fillStyle = context.strokeStyle = "#6666FF"
 	}
 	let p0 = {x: lens.x - lens.tangentX * lens.length * 0.5, y: lens.y - lens.tangentY * lens.length * 0.5}
 	let p1 = {x: lens.x + lens.tangentX * lens.length * 0.5, y: lens.y + lens.tangentY * lens.length * 0.5}
@@ -159,6 +188,11 @@ function DrawLensDiverging(context, lens, ghost)
 	context.lineTo(p1.x + lens.tangentX * 8 - lens.normalX * 4, p1.y + lens.tangentY * 8 - lens.normalY * 4);
 
 	context.stroke();
+	context.closePath();
+
+	context.beginPath();
+	context.arc(lens.x, lens.y, 4, 0, 2*Math.PI);
+	context.fill();
 	context.closePath();
 }
 

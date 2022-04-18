@@ -226,8 +226,8 @@ class Simulation
 			return;
 		}
 
-		let newElement = null;
 
+		let newElement = null;
 		switch(this.activeElement.elementType)
 		{
 			case (ElementSourcePoint):
@@ -404,10 +404,12 @@ class Simulation
 				for (let j=0; j<source.numberRays; j++)
 				{
 					let ray = this.calculateRay({x: x0 + deltaX * j, y: y0 + j * deltaY}, {x: source.normalX, y: source.normalY});
+					console.log("RAY: Number of points: " + ray.points.length);
 					this.rays.push(ray);
 				}
 			}
 		}
+		console.log("Number of rays: " + this.rays.length);
 	}
 
 	calculateRay(pos, dir)
@@ -428,6 +430,7 @@ class Simulation
 			for (let i=0; i<this.arrayPasiveElements.length; i++)
 			{
 				let element = this.arrayPasiveElements[i];
+				let bounce = null;
 				switch(element.elementType)
 				{
 					case ElementLensConverging:
@@ -438,18 +441,22 @@ class Simulation
 						let lengthHalfY = element.tangentY * element.length * 0.5 ;
 						let p2 = {x: element.x - lengthHalfX,  y: element.y - lengthHalfY};
 						let p3 = {x: element.x + lengthHalfX,  y: element.y + lengthHalfY};
-						let bounce = intersectionLineVsLine(p0, p1, p2, p3, true);
-						if (bounce != null && bounce.t > ErrorTolerance)
-						{
-							if (firstBounce == null || bounce.t < firstBounce.t)
-							{
-								firstBounce = bounce;
-								firstElement = element;
-							}
-						}
+						bounce = intersectionLineVsLine(p0, p1, p2, p3, true);
 						break;
+					case ElementMirrorCurved:
+						bounce = intersectionLineVsCircle(p0, p1, element.GetCenter(), element.radius, element.normalX, element.normalY, element.arcAngle);
+						break;
+
 				}
 
+				if (bounce != null && bounce.t > ErrorTolerance)
+				{
+					if (firstBounce == null || bounce.t < firstBounce.t)
+					{
+						firstBounce = bounce;
+						firstElement = element;
+					}
+				}
 			}
 
 			// Resolve bounce
@@ -465,7 +472,11 @@ class Simulation
 						dir = calculateLens(dir, firstBounce, firstElement, true);
 						break;
 					case ElementMirrorFlat:
-						dir = calculateReflection(dir, firstElement);
+						dir = calculateReflectionFlat(dir, firstElement);
+						break;
+					case ElementMirrorCurved:
+						dir = calculateReflectionCurved(dir, firstBounce, firstElement);
+						console.log("Dir: " + dir.x + " " + dir.y);
 						break;
 					case ElementBlocker:
 						done = true;
