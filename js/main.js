@@ -17,6 +17,7 @@ var gridCheckbox;
 var gridSizeNumber;
 var snapToGridCheckbox;
 var checkboxAdditiveMode;
+var checkboxShowDetails;
 
 var panelSettings;
 
@@ -58,6 +59,8 @@ function Start()
 	gridSizeNumber.addEventListener("change", OnGridChanges);
 	snapToGridCheckbox = document.getElementById("snapToGrid");
 	checkboxAdditiveMode = document.getElementById("additiveMode");
+	checkboxShowDetails = document.getElementById("showDetails")
+	checkboxShowDetails.addEventListener("change", () => {simulation.showDetails = checkboxShowDetails.checked; simulation.render();})
 
 	resetSettings();
 	mouseDown = false;

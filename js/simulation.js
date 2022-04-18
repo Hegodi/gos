@@ -31,6 +31,7 @@ class Simulation
 		this.isActiveElementNew = false;
 		this.gridEnabled = false;
 		this.gridSize = 50;
+		this.showDetails = false;
 	}
 
 	reset()
@@ -275,13 +276,13 @@ class Simulation
 			let x = 0;
 			for (let i=0; i<numWidth; i++, x += this.gridSize)
 			{
-				this.drawGridLine(x, 0, x, this.canvas.height);
+				DrawGridLine(this.context,x, 0, x, this.canvas.height);
 			}
 
 			let y = 0;
 			for (let i=0; i<numHeight; i++, y+=this.gridSize)
 			{
-				this.drawGridLine(0, y, this.canvas.width, y);
+				DrawGridLine(this.context,0, y, this.canvas.width, y);
 			}
 		}
 
@@ -289,7 +290,7 @@ class Simulation
 		this.context.lineWidth = 1.0;
 		for(let i=0; i<this.rays.length; i++)
 		{
-			this.drawRay(this.rays[i]);
+			DrawRay(this.context,this.rays[i]);
 		}
 
 
@@ -298,11 +299,11 @@ class Simulation
 		{
 			if (this.arraySources[i].elementType == ElementSourcePoint)
 			{
-				this.drawSourcePoint(this.arraySources[i], false);
+				DrawSourcePoint(this.context,this.arraySources[i], false);
 			}
 			else if (this.arraySources[i].elementType == ElementSourceBeam)
 			{
-				this.drawSourceBeam(this.arraySources[i], false);
+				DrawSourceBeam(this.context,this.arraySources[i], false);
 			}
 		}
 
@@ -311,23 +312,23 @@ class Simulation
 		{
 			if (this.arrayPasiveElements[i].elementType == ElementMirrorFlat)
 			{
-				this.drawMirroFlat(this.arrayPasiveElements[i], false);
+				DrawMirroFlat(this.context,this.arrayPasiveElements[i], false);
 			}
 			if (this.arrayPasiveElements[i].elementType == ElementMirrorCurved)
 			{
-				this.drawMirroCurved(this.arrayPasiveElements[i], false);
+				DrawMirroCurved(this.context,this.arrayPasiveElements[i], false);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensConverging)
 			{
-				this.drawLensConverging(this.arrayPasiveElements[i], false);
+				DrawLensConverging(this.context,this.arrayPasiveElements[i], false);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensDiverging)
 			{
-				this.drawLensDiverging(this.arrayPasiveElements[i], false);
+				DrawLensDiverging(this.context,this.arrayPasiveElements[i], false);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementBlocker)
 			{
-				this.drawBloquer(this.arrayPasiveElements[i], false);
+				DrawBloquer(this.context,this.arrayPasiveElements[i], false);
 			}
 		}
 
@@ -338,25 +339,25 @@ class Simulation
 				switch(this.activeElement.elementType)
 				{
 					case (ElementSourcePoint):
-						this.drawSourcePoint(this.activeElement, true);
+						DrawSourcePoint(this.context,this.activeElement, true);
 						break;
 					case (ElementSourceBeam):
-						this.drawSourceBeam(this.activeElement, true);
+						DrawSourceBeam(this.context,this.activeElement, true);
 						break;
 					case (ElementMirrorFlat):
-						this.drawMirroFlat(this.activeElement, true);
+						DrawMirroFlat(this.context,this.activeElement, true);
 						break;
 					case (ElementMirrorCurved):
-						this.drawMirroCurved(this.activeElement, true);
+						DrawMirroCurved(this.context,this.activeElement, true);
 						break;
 					case (ElementLensConverging):
-						this.drawLensConverging(this.activeElement, true);
+						DrawLensConverging(this.context,this.activeElement, true);
 						break;
 					case (ElementLensDiverging):
-						this.drawLensDiverging(this.activeElement, true);
+						DrawLensDiverging(this.context,this.activeElement, true);
 						break;
 					case (ElementBlocker):
-						this.drawBloquer(this.activeElement, true);
+						DrawBloquer(this.context,this.activeElement, true);
 						break;
 				}
 
@@ -370,181 +371,6 @@ class Simulation
 				this.context.stroke();
 				this.context.closePath();
 			}
-		}
-	}
-
-	drawGridLine(x0, y0, x1, y1)
-	{
-		this.context.beginPath();
-		this.context.moveTo(x0, y0);
-		this.context.lineTo(x1, y1);
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawMirroFlat(mirror, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#550000"
-		}
-		else
-		{
-			this.context.strokeStyle = "#CC0000"
-		}
-		this.context.lineWidth = 3;
-		this.context.beginPath();
-		this.context.moveTo(mirror.x - mirror.tangentX * mirror.length * 0.5, mirror.y - mirror.tangentY * mirror.length * 0.5);
-		this.context.lineTo(mirror.x + mirror.tangentX * mirror.length * 0.5, mirror.y + mirror.tangentY * mirror.length * 0.5);
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawMirroCurved(mirror, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#550000"
-		}
-		else
-		{
-			this.context.strokeStyle = "#CC0000"
-		}
-		this.context.lineWidth = 3;
-		this.context.beginPath();
-		//this.context.arc(mirror.x, mirror.y, mirror.radius, (mirror.angle - mirror.arcAngle/2) * Math.PI / 180.0, (mirror.angle + mirror.arcAngle/2) * Math.PI / 180.0);
-		this.context.arc(mirror.x, mirror.y, mirror.radius, mirror.angle * Math.PI / 180.0, (mirror.angle + mirror.arcAngle) * Math.PI / 180.0);
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawBloquer(mirror, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#555555"
-		}
-		else
-		{
-			this.context.strokeStyle = "#FFFFFF"
-		}
-		this.context.lineWidth = 3;
-		this.context.beginPath();
-		this.context.moveTo(mirror.x - mirror.tangentX * mirror.length * 0.5, mirror.y - mirror.tangentY * mirror.length * 0.5);
-		this.context.lineTo(mirror.x + mirror.tangentX * mirror.length * 0.5, mirror.y + mirror.tangentY * mirror.length * 0.5);
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawSourcePoint(source, ghost)
-	{
-		if (ghost)
-		{
-			this.context.fillStyle = "#555500"
-		}
-		else
-		{
-			this.context.fillStyle = "#FFFF00"
-		}
-		this.context.beginPath();
-		this.context.arc(source.x, source.y, 5, 0, Math.PI*2, false);
-		this.context.fill();
-		this.context.closePath();
-	}
-
-	drawSourceBeam(source, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#555500"
-		}
-		else
-		{
-			this.context.strokeStyle = "#FFFF00"
-		}
-		this.context.lineWidth = 2;
-		this.context.beginPath();
-		this.context.moveTo(source.x - source.tangentX * source.length * 0.5, source.y - source.tangentY * source.length * 0.5);
-		this.context.lineTo(source.x + source.tangentX * source.length * 0.5, source.y + source.tangentY * source.length * 0.5);
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawLensConverging(lens, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#228822"
-		}
-		else
-		{
-			this.context.strokeStyle = "#66FF66"
-		}
-		let p0 = {x: lens.x - lens.tangentX * lens.length * 0.5, y: lens.y - lens.tangentY * lens.length * 0.5}
-		let p1 = {x: lens.x + lens.tangentX * lens.length * 0.5, y: lens.y + lens.tangentY * lens.length * 0.5}
-
-		this.context.beginPath();
-		this.context.lineWidth = 2;
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p1.x, p1.y);
-		this.context.stroke();
-
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p0.x + lens.tangentX * 8 + lens.normalX * 4, p0.y + lens.tangentY * 8 + lens.normalY * 4);
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p0.x + lens.tangentX * 8 - lens.normalX * 4, p0.y + lens.tangentY * 8 - lens.normalY * 4);
-
-		this.context.moveTo(p1.x, p1.y);
-		this.context.lineTo(p1.x - lens.tangentX * 8 + lens.normalX * 4, p1.y - lens.tangentY * 8 + lens.normalY * 4);
-		this.context.moveTo(p1.x, p1.y);
-		this.context.lineTo(p1.x - lens.tangentX * 8 - lens.normalX * 4, p1.y - lens.tangentY * 8 - lens.normalY * 4);
-
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawLensDiverging(lens, ghost)
-	{
-		if (ghost)
-		{
-			this.context.strokeStyle = "#222288"
-		}
-		else
-		{
-			this.context.strokeStyle = "#6666FF"
-		}
-		let p0 = {x: lens.x - lens.tangentX * lens.length * 0.5, y: lens.y - lens.tangentY * lens.length * 0.5}
-		let p1 = {x: lens.x + lens.tangentX * lens.length * 0.5, y: lens.y + lens.tangentY * lens.length * 0.5}
-
-		this.context.beginPath();
-		this.context.lineWidth = 2;
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p1.x, p1.y);
-		this.context.stroke();
-
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p0.x - lens.tangentX * 8 + lens.normalX * 4, p0.y - lens.tangentY * 8 + lens.normalY * 4);
-		this.context.moveTo(p0.x, p0.y);
-		this.context.lineTo(p0.x - lens.tangentX * 8 - lens.normalX * 4, p0.y - lens.tangentY * 8 - lens.normalY * 4);
-
-		this.context.moveTo(p1.x, p1.y);
-		this.context.lineTo(p1.x + lens.tangentX * 8 + lens.normalX * 4, p1.y + lens.tangentY * 8 + lens.normalY * 4);
-		this.context.moveTo(p1.x, p1.y);
-		this.context.lineTo(p1.x + lens.tangentX * 8 - lens.normalX * 4, p1.y + lens.tangentY * 8 - lens.normalY * 4);
-
-		this.context.stroke();
-		this.context.closePath();
-	}
-
-	drawRay(ray)
-	{
-		for(let j=1; j<ray.points.length; j++)
-		{
-			this.context.beginPath();
-			this.context.moveTo(ray.points[j-1].x, ray.points[j-1].y);
-			this.context.lineTo(ray.points[j].x, ray.points[j].y);
-			this.context.stroke();
-			this.context.closePath();
 		}
 	}
 
