@@ -1,0 +1,25 @@
+- List of Elements
+- Zoom, pann screen
+- Implement Curved mirror
+- List of elements
+- Draw elements setttings (focal point , center, etc)
+- Draw selector for each element
+
+BUGS:
+
+DONE:
+- Implement Bloquer
+- Add option do duplicate elements
+- Expose position to element settings
+- Add Grid and snap to grid option
+- Add snap to angle option 
+- Improve UI: create panel for save/load files
+- Refactor edit/delete buttons: always in edit mode, delete button only for selected element
+
+FIXED:
+- Doesn't load results 
+- Lenses ray calculation does work for rays parallel to axis
+
+To Do later:
+- Thick lenses
+- Chromatic dispersion

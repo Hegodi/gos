@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Geometric Optics Simulator - v1.0</title>
+    <link rel="stylesheet" href="stylesOpticSimulation.css">
+    <script src="elements.js"></script>
+    <script src="simulation.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+
+
+<div class="toolBarSaveLoad"> 
+  <i>
+    <button class="myButton" id="btnClearAll" onclick="OnButtonClick(this)">New Simulation</button>
+    <button class="myButton" id="btnSave" onclick="downloadCurrentSimulation(simulation)">Save</button>
+    <input type="text" id="saveFilename" class="myText">
+    <a id="downloadLink" class="myText">click to download</a>
+    <button class="myButton" id="btnLoad" onclick="loadSimulation(simulation)">Load File</button>
+    <input type="checkbox" id="additiveMode" name="additiveMode" value="additiveMode" unchecked >
+    <label for="additiveMode" class="myText">Additive Mode</label>
+    <input type="file" id="loadFile" accept=".gos" name="loadFile" class="myText"> </input>
+  </i>
+</div>
+
+<div class="toolBarElements">
+  <div class="myTextCentered">Sources</div>
+  <button class="myButton" id="btnAddSourcePoint" onclick="OnButtonClick(this)">Point</button>
+  <button class="myButton" id="btnAddSourceBeam" onclick="OnButtonClick(this)">Beam</button>
+  <br>
+  <div class="myTextCentered">Elements</div>
+  <button class="myButton" id="btnAddMirrorFlat" onclick="OnButtonClick(this)">Flat Mirror</button>
+  <button class="myButton" id="btnAddMirrorCurved" onclick="OnButtonClick(this)">Curved Mirror</button>
+  <button class="myButton" id="btnAddConvergingLens" onclick="OnButtonClick(this)">Converging Lens</button>
+  <button class="myButton" id="btnAddDivergingLens" onclick="OnButtonClick(this)">Diverging Lens</button>
+  <button class="myButton" id="btnAddBloquer" onclick="OnButtonClick(this)">Blocker</button>
+</div>
+
+<div class="panelElement" id="elmentSettingsPanel">
+  <div class="panelElement_title"> 
+    <i id="labelElementSelected">is the title</i>
+    <button class="myButtonSmall" id="btnClone" onclick="OnCloneSelected()">Clone(c)</button>
+    <button class="myButtonSmall" id="btnDelete" onclick="OnDeleteSelected()">Delete(x)</button>
+  </div>
+  <div class="panelElement_table">
+    <label>X:</label>
+    <i id="labelPositionX">000</i>
+    <i></i>
+
+    <label>Y:</label>
+    <i id="labelPositionY">000</i>
+    <i></i>
+
+    <i id="elementSettingsLabelName_1">Value One</i>
+    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_1">
+    <input id = "elementSettingsValue_1" type="number" class="myInputNumber" value="20">
+
+    <i id="elementSettingsLabelName_2">Value One</i>
+    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_2">
+    <input id = "elementSettingsValue_2" type="number" class="myInputNumber" value="20">
+
+    <i id="elementSettingsLabelName_3">Value One</i>
+    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_3">
+    <input id = "elementSettingsValue_3" type="number" class="myInputNumber" value="20">
+
+    <i id="elementSettingsLabelName_4">Value One</i>
+    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_4">
+    <input id = "elementSettingsValue_4" type="number" class="myInputNumber" value="20">
+  </div>
+</div>
+
+<div class="toolBarHelpers">
+  <i align-items="center" text-align="center">
+  <input type="checkbox" id="gridVisible" name="gridVisible" value="gridVisible" unchecked >
+  <label for="gridVisible" class="myText">Grid</label>
+  <input id = "gridSize" type="number" class="myInputNumber" value="100" min="10" max="200" step="10">
+  <input type="checkbox" id="snapToGrid" name="snapToGrid" value="snapToGrid" unchecked >
+  <label for="snapToGrid" class="myText">Snap to grid</label>
+  </i>
+</div>
+
+<canvas id="canvasSimulation" width="1000" height="1000"> </canvas>
+
+
+<div class="watermark">
+<div class="watermarkLarge1">G</div> 
+<div class="watermarkLarge2">O</div> 
+<div class="watermarkLarge3">S</div> 
+<div class="watermarkMedium">1.0</div> 
+<div class="watermarkSmall1">eometric</div>
+<div class="watermarkSmall2">ptics</div>
+<div class="watermarkSmall3">imulator</div>
+</div>
+
+<script type="text/javascript">Start()</script>
+
+</body>
+</html>
