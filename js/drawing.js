@@ -31,7 +31,7 @@ function DrawMirroFlat(context, mirror, ghost)
 	context.closePath();
 }
 
-function DrawMirroCurved(context, mirror, ghost)
+function DrawMirroCurved(context, mirror, ghost, showDetails)
 {
 	if (ghost)
 	{
@@ -56,6 +56,11 @@ function DrawMirroCurved(context, mirror, ghost)
 	context.arc(mirror.x, mirror.y, 4, 0, 2*Math.PI);
 	context.fill();
 	context.closePath();
+
+    if (showDetails)
+    {
+        DrawCurvedSurfaveDetails(context,mirror);
+    }
 }
 
 function DrawBloquer(context, mirror, ghost)
@@ -120,7 +125,7 @@ function DrawSourceBeam(context, source, ghost)
 	context.closePath();
 }
 
-function DrawLensConverging(context, lens, ghost)
+function DrawLensConverging(context, lens, ghost, showDetails)
 {
 	if (ghost)
 	{
@@ -156,9 +161,14 @@ function DrawLensConverging(context, lens, ghost)
 	context.arc(lens.x, lens.y, 4, 0, 2*Math.PI);
 	context.fill();
 	context.closePath();
+
+    if (showDetails)
+    {
+        DrawLensDetails(context, lens);
+    }
 }
 
-function DrawLensDiverging(context, lens, ghost)
+function DrawLensDiverging(context, lens, ghost, showDetails)
 {
 	if (ghost)
 	{
@@ -194,7 +204,56 @@ function DrawLensDiverging(context, lens, ghost)
 	context.arc(lens.x, lens.y, 4, 0, 2*Math.PI);
 	context.fill();
 	context.closePath();
+
+    if (showDetails)
+    {
+        DrawLensDetails(context, lens);
+    }
 }
+
+function DrawLensDetails(context, lens)
+{
+    let f1 = {x: lens.x + lens.normalX * lens.focalLength, y: lens.y + lens.normalY * lens.focalLength};
+    let f2 = {x: lens.x - lens.normalX * lens.focalLength, y: lens.y - lens.normalY * lens.focalLength};
+    let f1_2 = {x: lens.x + lens.normalX * 2*lens.focalLength, y: lens.y + lens.normalY * 2*lens.focalLength};
+    let f2_2 = {x: lens.x - lens.normalX * 2*lens.focalLength, y: lens.y - lens.normalY * 2*lens.focalLength};
+    context.lineWidth = 0.5;
+
+    context.beginPath();
+    context.moveTo(lens.x, lens.y)
+    context.lineTo(f1_2.x, f1_2.y);
+    context.lineTo(f2_2.x, f2_2.y);
+    context.stroke();
+    context.closePath();
+
+    context.beginPath();
+    context.arc(f1.x, f1.y, 3, 0, 2 * Math.PI);
+    context.fill();
+    context.closePath();
+
+    context.beginPath();
+    context.arc(f2.x, f2.y, 3, 0, 2 * Math.PI);
+    context.fill();
+    context.closePath();
+}
+
+function DrawCurvedSurfaveDetails(context, surface)
+{
+    let center = surface.GetCenter();
+    context.lineWidth = 0.5;
+
+    context.beginPath();
+    context.moveTo(surface.x, surface.y)
+    context.lineTo(center.x, center.y)
+    context.stroke();
+    context.closePath();
+
+    context.beginPath();
+    context.arc(center.x, center.y, 3, 0, 2 * Math.PI);
+    context.fill();
+    context.closePath();
+}
+
 
 function DrawRay(context, ray)
 {

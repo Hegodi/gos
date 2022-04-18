@@ -317,15 +317,15 @@ class Simulation
 			}
 			if (this.arrayPasiveElements[i].elementType == ElementMirrorCurved)
 			{
-				DrawMirroCurved(this.context,this.arrayPasiveElements[i], false);
+				DrawMirroCurved(this.context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensConverging)
 			{
-				DrawLensConverging(this.context,this.arrayPasiveElements[i], false);
+				DrawLensConverging(this.context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensDiverging)
 			{
-				DrawLensDiverging(this.context,this.arrayPasiveElements[i], false);
+				DrawLensDiverging(this.context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementBlocker)
 			{
@@ -365,7 +365,7 @@ class Simulation
 			}
 			else
 			{
-				this.context.strokeStyle = "red";
+				this.context.strokeStyle = "white";
 				this.context.lineWidth = 1.0;
 				this.context.beginPath();
 				this.context.arc(this.activeElement.x, this.activeElement.y, 20, 0, Math.PI*2, false);

@@ -295,7 +295,7 @@ function OnElementSlideSettingsChanged()
 		case (ElementLensConverging):
 			simulation.activeElement.length = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.arcAngle = parseInt(listSettings[2].range.value);
+			simulation.activeElement.focalLength = parseInt(listSettings[2].range.value);
 			break;
 		case (ElementLensDiverging):
 			simulation.activeElement.length = parseInt(listSettings[0].range.value);
