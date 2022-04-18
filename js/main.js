@@ -38,6 +38,8 @@ function Start()
 	document.addEventListener('wheel', OnMouseWheel);
 	simulation = new Simulation(context, canvas);
 
+	document.getElementById("textVersion").innerHTML = VERSION;
+
 	for (let i=1; i<5; i++)
 	{
 		let labelName = document.getElementById("elementSettingsLabelName_" + i.toString());
@@ -443,7 +445,7 @@ function downloadCurrentSimulation()
 		filename = "NewSimulation";
 	}
 
-	var content = "";
+	var content = VERSION + "\n";
 	for (let i=0; i<simulation.arraySources.length; i++)
 	{
 		content += simulation.arraySources[i].elementType.description + "\n";
@@ -496,7 +498,11 @@ function loadSimulation()
 		}
 		data = reader.result;
 		lines = data.split("\n");
-		for (let i=0; i<lines.length-1; i++)
+		// First line is version:
+		let version = lines[0];
+		console.log("Version: " + version);
+
+		for (let i=1; i<lines.length-1; i++)
 		{
 			let element = null;
 			switch(lines[i])

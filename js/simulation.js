@@ -2,6 +2,7 @@ const MaxBounces = 10;
 const MaxDistanceBetweenBounces = 10000;
 const ErrorTolerance = 1e-12;
 const SelectDstSqr = 250;
+const VERSION = "v1.1"
 
 
 class Ray
@@ -404,12 +405,10 @@ class Simulation
 				for (let j=0; j<source.numberRays; j++)
 				{
 					let ray = this.calculateRay({x: x0 + deltaX * j, y: y0 + j * deltaY}, {x: source.normalX, y: source.normalY});
-					console.log("RAY: Number of points: " + ray.points.length);
 					this.rays.push(ray);
 				}
 			}
 		}
-		console.log("Number of rays: " + this.rays.length);
 	}
 
 	calculateRay(pos, dir)
@@ -476,7 +475,6 @@ class Simulation
 						break;
 					case ElementMirrorCurved:
 						dir = calculateReflectionCurved(dir, firstBounce, firstElement);
-						console.log("Dir: " + dir.x + " " + dir.y);
 						break;
 					case ElementBlocker:
 						done = true;
