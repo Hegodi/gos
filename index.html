@@ -2,102 +2,52 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Geometric Optics Simulator - v1.0</title>
-    <link rel="stylesheet" href="stylesGOS.css">
-    <script src="js/elements.js"></script>
-    <script src="js/drawing.js"></script>
-    <script src="js/simulation.js"></script>
-    <script src="js/main.js"></script>
+    <title>Geometric Optics Simulator</title>
+    <link rel="stylesheet" href="stylesIndex.css">
 </head>
 <body>
 
+  <div class="mainLayout">
+    <div class="titleContainer">
+      <div class="title"> GOS </div>
+      <div class="subtitle"> Geometric Optic Simulator </div>
+    </div>
+    <a class="linkStart" href="gos.html">
+      <img src="screenshotGOS.png" width="300px">
+    </a>
+    <a class="linkStart" href="gos.html">Start</a>
 
-<div class="toolBarSaveLoad"> 
-  <i>
-    <button class="myButton" id="btnClearAll" onclick="OnButtonClick(this)">New Simulation</button>
-    <button class="myButton" id="btnSave" onclick="downloadCurrentSimulation(simulation)">Save</button>
-    <input type="text" id="saveFilename" class="myText">
-    <a id="downloadLink" class="myText">click to download</a>
-    <button class="myButton" id="btnLoad" onclick="loadSimulation(simulation)">Load File</button>
-    <input type="checkbox" id="additiveMode" name="additiveMode" value="additiveMode" unchecked >
-    <label for="additiveMode" class="myText">Additive Mode</label>
-    <input type="file" id="loadFile" accept=".gos" name="loadFile" class="myText"> </input>
-  </i>
-</div>
-
-<div class="toolBarElements">
-  <div class="myTextCentered">Sources</div>
-  <button class="myButton" id="btnAddSourcePoint" onclick="OnButtonClick(this)">Point</button>
-  <button class="myButton" id="btnAddSourceBeam" onclick="OnButtonClick(this)">Beam</button>
-  <br>
-  <div class="myTextCentered">Elements</div>
-  <button class="myButton" id="btnAddMirrorFlat" onclick="OnButtonClick(this)">Flat Mirror</button>
-  <button class="myButton" id="btnAddMirrorCurved" onclick="OnButtonClick(this)">Curved Mirror</button>
-  <button class="myButton" id="btnAddConvergingLens" onclick="OnButtonClick(this)">Converging Lens</button>
-  <button class="myButton" id="btnAddDivergingLens" onclick="OnButtonClick(this)">Diverging Lens</button>
-  <button class="myButton" id="btnAddBloquer" onclick="OnButtonClick(this)">Blocker</button>
-</div>
-
-<div class="panelElement" id="elmentSettingsPanel">
-  <div class="panelElement_title"> 
-    <i id="labelElementSelected">is the title</i>
-    <button class="myButtonSmall" id="btnClone" onclick="OnCloneSelected()">Clone(c)</button>
-    <button class="myButtonSmall" id="btnDelete" onclick="OnDeleteSelected()">Delete(x)</button>
-  </div>
-  <div class="panelElement_table">
-    <label>X:</label>
-    <i id="labelPositionX">000</i>
-    <i></i>
-
-    <label>Y:</label>
-    <i id="labelPositionY">000</i>
-    <i></i>
-
-    <i id="elementSettingsLabelName_1">Value One</i>
-    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_1">
-    <input id = "elementSettingsValue_1" type="number" class="myInputNumber" value="20">
-
-    <i id="elementSettingsLabelName_2">Value One</i>
-    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_2">
-    <input id = "elementSettingsValue_2" type="number" class="myInputNumber" value="20">
-
-    <i id="elementSettingsLabelName_3">Value One</i>
-    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_3">
-    <input id = "elementSettingsValue_3" type="number" class="myInputNumber" value="20">
-
-    <i id="elementSettingsLabelName_4">Value One</i>
-    <input type="range" min="1" max="100" value="50" id="elementSettingsRange_4">
-    <input id = "elementSettingsValue_4" type="number" class="myInputNumber" value="20">
-  </div>
-</div>
-
-<div class="toolBarHelpers">
-  <i align-items="center" text-align="center">
-  <i id="textInfo" class="myTextInfo"> this is the info text</i>
-  <input type="checkbox" id="gridVisible" name="gridVisible" value="gridVisible" unchecked >
-  <label for="gridVisible" class="myText">Grid</label>
-  <input id = "gridSize" type="number" class="myInputNumber" value="100" min="10" max="200" step="10">
-  <input type="checkbox" id="snapToGrid" name="snapToGrid" value="snapToGrid" unchecked >
-  <label for="snapToGrid" class="myText">Snap to grid</label>
-  <input type="checkbox" id="showDetails" name="showDetails" value="showDetails" unchecked >
-  <label for="showDetails" class="myText">Draw Details</label>
-  </i>
-</div>
-
-<canvas id="canvasSimulation" width="1000" height="1000"> </canvas>
-
-
-<div class="watermark">
-<div class="watermarkLarge1">G</div> 
-<div class="watermarkLarge2">O</div> 
-<div class="watermarkLarge3">S</div> 
-<div class="watermarkMedium" id="textVersion">1.0</div> 
-<div class="watermarkSmall1">eometric</div>
-<div class="watermarkSmall2">ptics</div>
-<div class="watermarkSmall3">imulator</div>
-</div>
-
-<script type="text/javascript">Start()</script>
+    <div class="introText"> 
+      GOS (Geometric Optics Simulator) provides a framework to perform basic optical simulations based on the laws os what is known as <a href="https://en.wikipedia.org/wiki/Geometrical_optics">"geometric optics"</a>.
+      GOS is fully developed using Javascript and runs in your browser, it doesn't require downloading any executable or install anything.
+      <br><br>
+      List of features currently supported:
+      <br>
+      <ul>
+        <li>Intuitive user interface.</li>
+        <li>Save/Load your simulation results.</li>
+        <li>Realtime ray tracing.</li>
+        <br>
+        <li> Light sources supported:
+          <ul>
+            <li>Puntual light</li>
+            <li>Beam (colimated beam)</li>
+          </ul>
+        </li>
+        <br>
+        <li> Elements supported:
+          <ul>
+            <li>Flat Mirror</li>
+            <li>Spherical Mirror</li>
+            <li>Converging Thin lense</li>
+            <li>Diverging Thin lense</li>
+            <li>Blocker</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="credits"> Contact: diegonher@gmail.com</div>
+  </div>  
 
 </body>
 </html>
