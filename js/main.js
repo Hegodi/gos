@@ -18,6 +18,7 @@ var gridSizeNumber;
 var snapToGridCheckbox;
 var checkboxAdditiveMode;
 var checkboxShowDetails;
+var textInfo;
 
 var panelSettings;
 
@@ -63,6 +64,8 @@ function Start()
 	checkboxAdditiveMode = document.getElementById("additiveMode");
 	checkboxShowDetails = document.getElementById("showDetails")
 	checkboxShowDetails.addEventListener("change", () => {simulation.showDetails = checkboxShowDetails.checked; simulation.render();})
+	textInfo = document.getElementById("textInfo");
+	textInfo.innerHTML ="Welcome to GOS " + VERSION;
 
 	resetSettings();
 	mouseDown = false;
@@ -328,6 +331,7 @@ function OnElementValueSettingsChanged()
 
 function SetInEditMode()
 {
+	textInfo.innerHTML = "Left click at the center to select an object";
 	deselectAllButtons();
 	mode = ModeEditElement;
 	simulation.isActiveElementNew = false;
@@ -338,6 +342,7 @@ function SetInEditMode()
 
 function SetInAddingMode()
 {
+	textInfo.innerHTML = "Left click to place the object";
 	SetSettingsFromActiveElement();
 	mode = ModeAddElement;
 	clearDownloadLink();
@@ -402,6 +407,7 @@ function OnButtonClick(element, index)
 	}
 	else if (element.id == "btnClearAll")
 	{
+		textInfo.innerHTML ="New simulation";
 		NewSimulation();
 	}
 
@@ -427,6 +433,7 @@ function OnCloneSelected()
 
 function OnDeleteSelected()
 {
+	textInfo.innerHTML ="Object deleted";
 	simulation.DeleteActiveElement();
 	SetSettingsFromActiveElement();
 }
@@ -469,6 +476,7 @@ function downloadCurrentSimulation()
 	// NOTE: MAY NOT ALWAYS WORK DUE TO BROWSER SECURITY
 	// BETTER TO LET USERS CLICK ON THEIR OWN
 	anchor.click();
+	textInfo.innerHTML = "Click in the link if the file was not downloaded";
 }
 
 function clearDownloadLink()
@@ -502,53 +510,72 @@ function loadSimulation()
 		let version = lines[0];
 		console.log("Version: " + version);
 
-		for (let i=1; i<lines.length-1; i++)
+		let errors = false;
+		try
 		{
-			let element = null;
-			switch(lines[i])
+			for (let i=1; i<lines.length-1; i+=2)
 			{
-				case (ElementSourcePoint).description:
-					element = new SourcePoint(0,0,0);
-					element.SetFromData(lines[i+1]);
-					simulation.arraySources.push(element);
-					break;
-				case (ElementSourceBeam.description):
-					element = new SourceBeam(0,0,1, 0);
-					element.SetFromData(lines[i+1]);
-					simulation.arraySources.push(element);
-					break;
-				case (ElementMirrorFlat.description):
-					element = new SurfaceFlat(0,0,1, true);
-					element.SetFromData(lines[i+1]);
-					simulation.arrayPasiveElements.push(element);
-					break;
-				case (ElementMirrorCurved.description):
-					element = new SurfaceCurved(0,0,1,1, true);
-					element.SetFromData(lines[i+1]);
-					simulation.arrayPasiveElements.push(element);
-					break;
-				case (ElementLensConverging.description):
-					element = new ThinLens(0,0,1,1, true);
-					element.SetFromData(lines[i+1]);
-					simulation.arrayPasiveElements.push(element);
-					break;
-				case (ElementLensDiverging.description):
-					element = new ThinLens(0,0,1,1, false);
-					element.SetFromData(lines[i+1]);
-					simulation.arrayPasiveElements.push(element);
-					break;
-				case (ElementBlocker.description):
-					element = new SurfaceFlat(0,0,1, false);
-					element.SetFromData(lines[i+1]);
-					simulation.arrayPasiveElements.push(element);
-					break;
+				let element = null;
+				switch(lines[i])
+				{
+					case (ElementSourcePoint).description:
+						element = new SourcePoint(0,0,0);
+						element.SetFromData(lines[i+1]);
+						simulation.arraySources.push(element);
+						break;
+					case (ElementSourceBeam.description):
+						element = new SourceBeam(0,0,1, 0);
+						element.SetFromData(lines[i+1]);
+						simulation.arraySources.push(element);
+						break;
+					case (ElementMirrorFlat.description):
+						element = new SurfaceFlat(0,0,1, true);
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
+					case (ElementMirrorCurved.description):
+						element = new SurfaceCurved(0,0,1,1, true);
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
+					case (ElementLensConverging.description):
+						element = new ThinLens(0,0,1,1, true);
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
+					case (ElementLensDiverging.description):
+						element = new ThinLens(0,0,1,1, false);
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
+					case (ElementBlocker.description):
+						element = new SurfaceFlat(0,0,1, false);
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
+					default:
+						textInfo.innerHTML = "WARNING: unkown element types: " + lines[i];
+						errors = true;
+						break;
+				}
+			}
+			if (!errors)
+			{
+				textInfo.innerHTML = "Simulation loaded successfully";
 			}
 		}
-		simulation.refresh();
+		catch(e)
+		{
+			textInfo.innerHTML = "ERROR: wrong format (" + e + ")";
+		}
+		simulation.refresh(); 
 	}
 
 	if (file.files.length > 0)
 	{
 		reader.readAsText(file.files[0]);
+	}
+	{
+		textInfo.innerHTML = "No file slected";
 	}
 }

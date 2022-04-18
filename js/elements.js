@@ -168,7 +168,7 @@ class SourcePoint
 		let bits = data.split(";");
 		if (bits.length < 3)
 		{
-			console.error("ERROR while parsing Source Point");
+			throw(this.elementType.toString());
 		}
 		else
 		{
@@ -217,7 +217,7 @@ class OrientableElement
 		let bits = data.split(";");
 		if (bits.length < 3)
 		{
-			console.error("ERROR while parsing base orientable element");
+			throw("OrientableElement");
 		}
 		else
 		{
@@ -250,7 +250,7 @@ class SourceBeam extends OrientableElement
 		let bits = data.split(";");
 		if (bits.length < 5)
 		{
-			console.error("ERROR while parsing Source Beam: expecting 5 elements and only " + bits.length + " found." );
+			throw(this.elementType.toString());
 		}
 		else
 		{
@@ -288,7 +288,7 @@ class SurfaceFlat extends OrientableElement
 		let bits = data.split(";");
 		if (bits.length < 4)
 		{
-			console.error("ERROR while parsing Flat Surface: expecting 4 elements and only " + bits.length + " found." );
+			throw(this.elementType.toString());
 		}
 		else
 		{
@@ -334,7 +334,7 @@ class SurfaceCurved extends OrientableElement
 		let bits = data.split(";");
 		if (bits.length < 5)
 		{
-			console.error("ERROR while parsing Curved Surface: expecting 5 elements and only " + bits.length + " found." );
+			throw(this.elementType.toString());
 		}
 		else
 		{
@@ -374,7 +374,7 @@ class ThinLens extends OrientableElement
 		let bits = data.split(";");
 		if (bits.length < 5)
 		{
-			console.error("ERROR while parsing Thin Lens: expecting 5 elements and only " + bits.length + " found." );
+			throw(this.elementType.toString());
 		}
 		else
 		{
