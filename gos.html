@@ -14,11 +14,12 @@
 
 <div class="toolBarSaveLoad"> 
   <i>
-    <button class="myButton" id="btnClearAll" onclick="OnButtonClick(this)">New Simulation</button>
-    <button class="myButton" id="btnSave" onclick="downloadCurrentSimulation(simulation)">Save</button>
+    <button class="myButtonTop" id="btnClearAll" onclick="OnButtonClick(this)">New Simulation</button>
+    <button class="myButtonTop" id="btnSave" onclick="downloadCurrentSimulation(simulation)">Save Simulation</button>
+    <button class="myButtonTop" id="btnExport" onclick="ExportPNG(simulation)">Export PNG</button>
     <input type="text" id="saveFilename" class="myText">
     <a id="downloadLink" class="myText">click to download</a>
-    <button class="myButton" id="btnLoad" onclick="loadSimulation(simulation)">Load File</button>
+    <button class="myButtonTop" id="btnLoad" onclick="loadSimulation(simulation)">Load File</button>
     <input type="checkbox" id="additiveMode" name="additiveMode" value="additiveMode" unchecked >
     <label for="additiveMode" class="myText">Additive Mode</label>
     <input type="file" id="loadFile" accept=".gos" name="loadFile" class="myText"> </input>
@@ -88,13 +89,8 @@
 
 
 <div class="watermark">
-<div class="watermarkLarge1">G</div> 
-<div class="watermarkLarge2">O</div> 
-<div class="watermarkLarge3">S</div> 
-<div class="watermarkMedium" id="textVersion">1.0</div> 
-<div class="watermarkSmall1">eometric</div>
-<div class="watermarkSmall2">ptics</div>
-<div class="watermarkSmall3">imulator</div>
+<div class="watermarkLarge">GOS</div> 
+<div class="watermarkMedium" id="textVersion">##</div> 
 </div>
 
 <script type="text/javascript">Start()</script>

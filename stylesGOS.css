@@ -156,6 +156,31 @@ canvas {
     background: #444444;
 }
 
+.myButtonTop {
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    align-items: center;
+    text-align: center;
+    height: 20px;
+    padding: 0 10px;
+    margin: 5px 5px;
+    background: #eeeeee;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.myButtonTop:hover {
+    background: #dddddd;
+}
+
+.myButtonTop:active {
+    background: #444444;
+}
+
 .myButtonSelected {
     font-family: inherit;
     font-weight: inherit;
@@ -246,7 +271,7 @@ canvas {
     color: #a1a1a1;
 }
 
-.watermarkLarge1
+.watermarkLarge
 {
     font-family: inherit;
     font-weight: inherit;
@@ -254,29 +279,7 @@ canvas {
     position: absolute;
     color: inherit;
     top:5px;
-    left: 840px;
-}
-
-.watermarkLarge2
-{
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: 35px;
-    color: inherit;
-    position: absolute;
-    top:5px;
-    left: 940px;
-}
-
-.watermarkLarge3
-{
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: 35px;
-    color: inherit;
-    position: absolute;
-    top:5px;
-    left: 1015px;
+    right: 55px;
 }
 
 .watermarkMedium
@@ -287,7 +290,7 @@ canvas {
     color: inherit;
     position: absolute;
     top:18px;
-    left: 1140px;
+    right: 5px;
 }
 
 .watermarkSmall1

@@ -383,7 +383,7 @@ function OnButtonClick(element, index)
 	}
 	else if (element.id == "btnAddMirrorCurved")
 	{
-		simulation.addMirrorCurved(100.0, 30.0);
+		simulation.addMirrorCurved(150.0, 50.0);
 		SetInAddingMode();
 		setSelected = true;
 	}
@@ -436,6 +436,28 @@ function OnDeleteSelected()
 	textInfo.innerHTML ="Object deleted";
 	simulation.DeleteActiveElement();
 	SetSettingsFromActiveElement();
+}
+
+function ExportPNG(simulation)
+{
+	SetInEditMode();
+	deselectAllButtons();
+	simulation.activeElement = null;
+	simulation.isActiveElementNew = null;
+	simulation.render();
+
+	let filename = document.getElementById("saveFilename").value;
+	if (filename == "")
+	{
+		filename = "NewSimulation";
+	}
+
+	var anchor = document.getElementById("downloadLink");
+	anchor.href = simulation.canvas.toDataURL();
+	anchor.download = filename + ".png";
+	anchor.innerHTML ="click to download";
+	anchor.click();
+	textInfo.innerHTML = "Click in the link if the file was not downloaded";
 }
 
 function downloadCurrentSimulation()
