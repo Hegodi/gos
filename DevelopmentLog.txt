@@ -1,0 +1,14 @@
+Version 1.0:
+	- Save/Load results
+	- Point and Beam sources
+	- Flat mirrors
+	- Converging and Diverging thinn lenses
+	- Blocker
+	- Snap to grid
+	- Clone/Delete shortcuts
+	- Basic selection/movement
+
+Version 1.1:
+	- Curved Mirror
+	- Add version control to saved results
+	- Add Draw details option
