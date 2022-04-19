@@ -451,6 +451,23 @@ class ThickLens extends OrientableElement
 		this.setAngle(0.0);
 	}
 
+	Clone()
+	{
+		let lens = new ThickLens(0,0);
+		lens.height = this.height;
+		lens.thickness = this.thickness;
+		lens.refractiveIndex = this.refractiveIndex;
+		lens.surfaceAconvex = this.surfaceAconvex;
+		lens.surfaceBconvex = this.surfaceBconvex;
+		for (let i=0; i<this.surfaces.length; i++)
+		{
+			lens.surfaces[i] = Object.assign(lens.surfaces[i], this.surfaces[i]);
+		}
+		lens.setAngle(this.angle);
+
+		return lens;
+	}
+
 	GetData()
 	{
 		let data = super.GetData();

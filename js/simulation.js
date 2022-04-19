@@ -238,6 +238,7 @@ class Simulation
 
 
 		let newElement = null;
+		let copyAll = true;
 		switch(this.activeElement.elementType)
 		{
 			case (ElementSourcePoint):
@@ -262,11 +263,15 @@ class Simulation
 				newElement = new SurfaceFlat(0,0,10, true);
 				break;
 			case (ElementThickLens):
-				newElement = new ThickLens(0,0);
+				newElement = this.activeElement.Clone();
+				copyAll = false;
 				break;
 		}
 
-		newElement = Object.assign(newElement, this.activeElement)
+		if (copyAll)
+		{
+			newElement = Object.assign(newElement, this.activeElement)
+		}
 		this.activeElement = newElement;
 		this.isActiveElementNew = true;
 
