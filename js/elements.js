@@ -261,6 +261,7 @@ class SourceBeam extends OrientableElement
         this.length = length;
         this.numberRays = numberRays;
         this.elementType = ElementSourceBeam;
+		this.setAngle(0.0);
     }
 
 	GetData()

@@ -294,7 +294,7 @@ function OnElementSlideSettingsChanged()
 		case (ElementSourceBeam):
 			simulation.activeElement.numberRays = parseInt(listSettings[0].range.value);
 			simulation.activeElement.length = parseInt(listSettings[1].range.value);
-			simulation.activeElement.setAngle(listSettings[2].range.value);
+			simulation.activeElement.setAngle(parseInt(listSettings[2].range.value));
 			break;
 		case (ElementMirrorFlat):
 			simulation.activeElement.length = parseInt(listSettings[0].range.value);
