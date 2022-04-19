@@ -513,6 +513,11 @@ class Simulation
 				}
 				lastPoint = {x: firstBounce.x, y:firstBounce.y};
 				numBounces++;
+				// This should never happen!! but it seeoms sometimes it does due to some numeric rounding :(
+				if (dir == null)
+				{
+					done = true;
+				}
 			}
 			else
 			{

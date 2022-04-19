@@ -165,7 +165,11 @@ function calculateLens(rayDir, hitPos, lens, diverging)
 	}
 
 	let intersection = intersectionLineVsLine(p, o, h, f, false)
-	return {x: hitPos.x - intersection.x, y: hitPos.y - intersection.y};
+	if (intersection != null)
+	{
+		return {x: hitPos.x - intersection.x, y: hitPos.y - intersection.y};
+	}
+	return null;
 }
 
 class SourcePoint
