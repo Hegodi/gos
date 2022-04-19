@@ -92,7 +92,7 @@ canvas {
     left: 5px;
     z-index: 2;
     border-style:solid;
-    width: 300px;
+    width: 330px;
     height: auto;
     background: #aaaaaa;
     outline: none;
@@ -127,7 +127,7 @@ canvas {
     place-items: center left;
     align-items: left;
     text-align: left;
-    grid-template-columns: 80px 140px 1fr;
+    grid-template-columns: 100px 140px 1fr;
 }
 
 .myButton {

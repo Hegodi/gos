@@ -282,7 +282,7 @@ function SetSettingsFromActiveElement()
 			{
 				setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000, PRECISION_FLOAT);
 			}
-			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex, PRECISION_FLOAT, 100, PRECISION_FLOAT);
+			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex, PRECISION_FLOAT, 10, PRECISION_FLOAT);
 			break;
 	}
 	UpdateSettingsLabels();
