@@ -308,6 +308,7 @@ function DrawThickLens(context, lens, ghost)
 		context.stroke();
 	}
 
+	/*
 	context.strokeStyle = "#FFFFFF";
 	for (let i=0; i<4; i++)
 	{
@@ -320,21 +321,6 @@ function DrawThickLens(context, lens, ghost)
 		context.stroke();
 
 	}
-	/*
-	let edgesA = lens.edgesSurfaceA;
-	let edgesB = lens.edgesSurfaceB;
-
-	context.beginPath();
-	context.moveTo(edgesA.pU.x, edgesA.pU.y);
-	context.lineTo(edgesB.pU.x, edgesB.pU.y);
-	context.stroke();
-	context.closePath();
-
-	context.beginPath();
-	context.moveTo(edgesA.pB.x, edgesA.pB.y);
-	context.lineTo(edgesB.pB.x, edgesB.pB.y);
-	context.stroke();
-	context.closePath();
 	*/
 
 	context.beginPath();

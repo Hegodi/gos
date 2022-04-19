@@ -87,9 +87,9 @@ class Simulation
 		this.isActiveElementNew = true;
 	}
 
-	addThickLens()
+	addThickLens(r1, r2)
 	{
-		this.activeElement = new ThickLens();
+		this.activeElement = new ThickLens(r1, r2);
 		this.isActiveElementNew = true;
 		console.log("Add thick lens", this.activeElement);
 	}
@@ -382,9 +382,9 @@ class Simulation
 			else
 			{
 				this.context.strokeStyle = "white";
-				this.context.lineWidth = 1.0;
+				this.context.lineWidth = 2.0;
 				this.context.beginPath();
-				this.context.arc(this.activeElement.x, this.activeElement.y, 20, 0, Math.PI*2, false);
+				this.context.arc(this.activeElement.x, this.activeElement.y, 15, 0, Math.PI*2, false);
 				this.context.stroke();
 				this.context.closePath();
 			}

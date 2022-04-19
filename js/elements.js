@@ -11,7 +11,7 @@ const ElementThickLens = Symbol("ThickLens");
 const ElementInterfaceCurve = Symbol("InterfaceCurve");
 const ElementInterfaceFlat = Symbol("InterfaceFlat");
 
-const RADIUS_MAX = 1999;
+const RADIUS_INF = 100000;
 
 function Distance2(p0, p1)
 {
@@ -427,7 +427,7 @@ class ThinLens extends OrientableElement
 
 class ThickLens extends OrientableElement
 {
-	constructor()
+	constructor(r1, r2)
 	{
 		super(0.0, 0.0);
 		this.height = 0.0;
@@ -441,12 +441,12 @@ class ThickLens extends OrientableElement
 		this.refractiveIndex = 2.0;
 		this.elementType = ElementThickLens;
 
-		this.surfaceAconvex = true;
-		this.surfaceBconvex = true;
+		this.surfaceAconvex = r1 >= 0.0;
+		this.surfaceBconvex = r2 >= 0.0;
 		this.edgesSurfaceA;
 		this.edgesSurfaceB;
 
-		this.SetValuesIfConsistent(150.0, 20.0, 200.0, 200.0);
+		this.SetValuesIfConsistent(150.0, 40.0, r1 == 0 ? RADIUS_INF : 200.0, r2 == 0 ? RADIUS_INF : 200.0);
 		this.setAngle(0.0);
 	}
 
@@ -454,19 +454,35 @@ class ThickLens extends OrientableElement
 	{
 		this.surfaces[0].x = this.x - this.normalX * this.thickness * 0.5;
 		this.surfaces[0].y = this.y - this.normalY * this.thickness * 0.5;
-		this.surfaces[0].n1 = 1.0;
-		this.surfaces[0].n2 = this.refractiveIndex;
+		if (this.surfaceAconvex)
+		{
+			this.surfaces[0].n1 = 1.0;
+			this.surfaces[0].n2 = this.refractiveIndex;
+		}
+		else
+		{
+			this.surfaces[0].n2 = 1.0;
+			this.surfaces[0].n1 = this.refractiveIndex;
+		}
 		
 		this.surfaces[1].x = this.x + this.normalX * this.thickness * 0.5;
 		this.surfaces[1].y = this.y + this.normalY * this.thickness * 0.5;
-		this.surfaces[1].n1 = 1.0;
-		this.surfaces[1].n2 = this.refractiveIndex;
+		if (this.surfaceBconvex)
+		{
+			this.surfaces[1].n1 = 1.0;
+			this.surfaces[1].n2 = this.refractiveIndex;
+		}
+		else
+		{
+			this.surfaces[1].n2 = 1.0;
+			this.surfaces[1].n1 = this.refractiveIndex;
+		}
 
 		this.surfaces[2].n1 = 1.0;
 		this.surfaces[2].n2 = this.refractiveIndex;
 
-		this.surfaces[3].n1 = this.refractiveIndex;
-		this.surfaces[3].n2 = 1.0;
+		this.surfaces[3].n1 = 1.0;
+		this.surfaces[3].n2 = this.refractiveIndex;
 
 		this.edgesSurfaceA = this.ComputeEdgesSurfaceA();
 		this.edgesSurfaceB = this.ComputeEdgesSurfaceB();
@@ -484,8 +500,10 @@ class ThickLens extends OrientableElement
 		else
 		{
 			extraThickness += cA;
+			offset -= cA / 2;
 		}
-		if (this.surfaceAconvex)
+
+		if (this.surfaceBconvex)
 		{
 			extraThickness -= cB;
 			offset -= cB / 2;
@@ -493,6 +511,7 @@ class ThickLens extends OrientableElement
 		else
 		{
 			extraThickness += cB;
+			offset += cB / 2;
 		}
 
 		this.surfaces[2].x = this.x + this.height * 0.5 * this.tangentX + this.normalX * offset;
@@ -633,13 +652,11 @@ function RefractionSurface(dir, bounce, surface)
 	let normal = null;
 	if (surface.elementType == ElementInterfaceFlat)
 	{
-		console.log("Flat");
 		normal = {x: surface.normalX, y: surface.normalY};
 	}
 	else if (surface.elementType == ElementInterfaceCurve)
 	{
-		console.log("Curved");
-		if (surface.radius > RADIUS_MAX)
+		if (surface.radius >= RADIUS_INF)
 		{
 			normal = {x: surface.normalX, y: surface.normalY};
 		}

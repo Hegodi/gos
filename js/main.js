@@ -268,8 +268,14 @@ function SetSettingsFromActiveElement()
 			setSettingsWidget(0, "Height", simulation.activeElement.height, 10, 500);
 			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
 			setSettingsWidget(2, "Thickness", simulation.activeElement.thickness, 20, 200);
-			setSettingsWidget(3, "Radius A", simulation.activeElement.surfaces[0].radius, 10, 2000);
-			setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000);
+			if (simulation.activeElement.surfaces[0].radius < RADIUS_INF)
+			{
+				setSettingsWidget(3, "Radius A", simulation.activeElement.surfaces[0].radius, 10, 2000);
+			}
+			if (simulation.activeElement.surfaces[1].radius < RADIUS_INF)
+			{
+				setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000);
+			}
 			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex * 100, 0, 1000);
 			break;
 	}
@@ -322,8 +328,16 @@ function OnElementSlideSettingsChanged()
 		case (ElementThickLens):
 			let height = parseInt(listSettings[0].range.value);
 			let thickness = parseInt(listSettings[2].range.value);
-			let radiusA = parseInt(listSettings[3].range.value);
-			let radiusB = parseInt(listSettings[4].range.value);
+			let radiusA = RADIUS_INF;
+			let radiusB = RADIUS_INF;
+			if (simulation.activeElement.surfaces[0].radius < RADIUS_INF)
+			{
+				radiusA = listSettings[3].range.value;
+			}
+			if (simulation.activeElement.surfaces[1].radius < RADIUS_INF)
+			{
+				radiusB = listSettings[4].range.value;
+			}
 			simulation.activeElement.SetValuesIfConsistent(height, thickness, radiusA, radiusB);
 			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
 			simulation.activeElement.refractiveIndex = parseFloat(listSettings[5].range.value / 100);
@@ -422,9 +436,39 @@ function OnButtonClick(element, index)
 		SetInAddingMode();
 		setSelected = true;
 	}
-	else if (element.id == "btnAddThickLens")
+	else if (element.id == "btnAddThickLens_Slab")
 	{
-		simulation.addThickLens();
+		simulation.addThickLens(0, 0);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens_Biconvex")
+	{
+		simulation.addThickLens(1, 1);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens_PlanoConvex")
+	{
+		simulation.addThickLens(0, 1);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens_Meniscus")
+	{
+		simulation.addThickLens(1, -1);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens_PlanoConcave")
+	{
+		simulation.addThickLens(0, -1);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens_Biconcave")
+	{
+		simulation.addThickLens(-1, -1);
 		SetInAddingMode();
 		setSelected = true;
 	}
