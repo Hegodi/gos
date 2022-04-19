@@ -6,7 +6,7 @@ var selectElementType;
 
 const ModeAddElement = Symbol("ModeAddElement");
 const ModeEditElement = Symbol("ModeEditElement");
-const ModeDeleteElement = Symbol("ModeDeleteElement");
+const ModeTools = Symbol("ModeTools");
 
 const PRECISION_FLOAT = 0.01;
 
@@ -98,6 +98,19 @@ function OnMouseDown(event)
 	{
 		simulation.trySelectElement(event.offsetX, event.offsetY);
 		SetSettingsFromActiveElement();
+	}
+	else if (mode == ModeTools)
+	{
+		if (simulation.toolRule.isActive)
+		{
+			simulation.toolRule.SetPoint({x:event.offsetX, y:event.offsetY});
+			simulation.render();
+		}
+		else if (simulation.toolPortractor.isActive)
+		{
+			simulation.toolPortractor.SetPoint({x:event.offsetX, y:event.offsetY});
+			simulation.render();
+		}
 	}
 }
 
@@ -379,6 +392,7 @@ function SetInEditMode()
 	mode = ModeEditElement;
 	simulation.isActiveElementNew = false;
 	simulation.activeElement = null;
+	simulation.disableAllTools();
 	resetSettings();
 	simulation.render();
 }
@@ -388,7 +402,20 @@ function SetInAddingMode()
 	textInfo.innerHTML = "Left click to place the object";
 	SetSettingsFromActiveElement();
 	mode = ModeAddElement;
+	simulation.disableAllTools();
 	clearDownloadLink();
+}
+
+function SetInToolsMode()
+{
+	textInfo.innerHTML = "";
+	deselectAllButtons();
+	mode = ModeTools;
+	simulation.isActiveElementNew = false;
+	simulation.activeElement = null;
+	simulation.disableAllTools();
+	resetSettings();
+	simulation.render();
 }
 
 
@@ -497,8 +524,45 @@ function OnButtonClick(element, index)
 	simulation.render();
 }
 
+function OnButtonToolClick(button)
+{
+	if (button.id == "btnRule")
+	{
+		if (button.className == "myButtonSelected")
+		{
+			SetInEditMode();
+		}
+		else
+		{
+			SetInToolsMode();
+			button.className = "myButtonSelected";
+			simulation.toolRule.Reset();
+			simulation.toolRule.isActive = true;
+			textInfo.innerHTML = "Click in two points to measure the distance between them";
+		}
+	}
+	else if (button.id == "btnPortractor")
+	{
+		if (button.className == "myButtonSelected")
+		{
+			SetInEditMode();
+		}
+		else
+		{
+			SetInToolsMode();
+			button.className = "myButtonSelected";
+			simulation.toolPortractor.Reset();
+			simulation.toolPortractor.isActive = true;
+			textInfo.innerHTML = "Click in two points to measure the distance between them";
+		}
+	}
+
+}
+
+
 function NewSimulation()
 {
+	deselectAllButtons();
 	document.getElementById("saveFilename").value = "New Simulation"
 	clearDownloadLink();
 	simulation.reset();
@@ -537,6 +601,13 @@ function ExportPNG(simulation)
 	anchor.innerHTML ="click to download";
 	anchor.click();
 	textInfo.innerHTML = "Click in the link if the file was not downloaded";
+}
+
+function clearDownloadLink()
+{
+	var anchor = document.getElementById("downloadLink");
+	window.URL.revokeObjectURL(anchor.href);
+	anchor.innerHTML ="";
 }
 
 function downloadCurrentSimulation()
@@ -578,13 +649,6 @@ function downloadCurrentSimulation()
 	// BETTER TO LET USERS CLICK ON THEIR OWN
 	anchor.click();
 	textInfo.innerHTML = "Click in the link if the file was not downloaded";
-}
-
-function clearDownloadLink()
-{
-	var anchor = document.getElementById("downloadLink");
-	window.URL.revokeObjectURL(anchor.href);
-	anchor.innerHTML ="";
 }
 
 function loadSimulation()

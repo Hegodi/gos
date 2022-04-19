@@ -33,6 +33,9 @@ class Simulation
 		this.gridEnabled = false;
 		this.gridSize = 50;
 		this.showDetails = false;
+
+		this.toolRule = new Ruler();
+		this.toolPortractor = new Portractor();
 	}
 
 	reset()
@@ -397,6 +400,11 @@ class Simulation
 				this.context.closePath();
 			}
 		}
+		else
+		{
+			this.toolRule.Draw(this.context)
+			this.toolPortractor.Draw(this.context);
+		}
 	}
 
 	calculateRayTrace()
@@ -532,5 +540,14 @@ class Simulation
 		}
 
 		return ray;
+	}
+
+	disableAllTools()
+	{
+		this.toolRule.Reset();
+		this.toolRule.isActive = false;
+
+		this.toolPortractor.Reset();
+		this.toolPortractor.isActive = false;
 	}
 }

@@ -582,9 +582,6 @@ class ThickLens extends OrientableElement
 		this.surfaces[3].x = this.x - this.height * 0.5 * this.tangentX + this.normalX * offset;
 		this.surfaces[3].y = this.y - this.height * 0.5 * this.tangentY + this.normalY * offset;
 		this.surfaces[3].length = this.thickness + extraThickness;
-
-		console.log("Update");
-
 	}
 
 	setAngle(angle)
@@ -618,8 +615,6 @@ class ThickLens extends OrientableElement
 		{
 
 		}
-		console.log("SetAngle");
-
 	}
 
 	SetValuesIfConsistent(height, thickness, radiusA, radiusB)
@@ -643,7 +638,6 @@ class ThickLens extends OrientableElement
 			thicknessMin += (1.0 - Math.cos(0.5*this.surfaces[1].arcAngle * Math.PI / 180)) * this.surfaces[1].radius ;
 		}
 		this.thickness = Math.max(thicknessMin, thickness);
-		console.log("SetValuesIfConsistent");
 	}
 }
 
