@@ -2,9 +2,8 @@ body {
     background: #dbdbdb;
     align-content: center;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-weight: 500;
-    font-size: 10px;
-    overflow: hidden;
+    font-weight: 100;
+    font-size: 12px;
     display: flex;
     justify-content: center;
 }
@@ -19,8 +18,8 @@ body {
     align-items: center;
     text-align: center;
     border-style:solid;
-    border-width: 2px;
-    border-color: #ebebeb;
+    border-width: 5px;
+    border-color: #ffffff;
     background: #aaaaaa;
     outline: none;
     border-radius: 5px;
@@ -76,7 +75,7 @@ body {
 }
 .linkStart:hover
 {
-    color: #DDDD00
+    color: #5c5a54
 }
 .linkStart:active
 {
@@ -93,6 +92,7 @@ body {
     text-align: center;
     overflow: hidden;
     font-size: 10px;
+    font-weight: 500;
     margin-top: 50px;
     margin-bottom: 10px;
 }
@@ -101,12 +101,22 @@ body {
 {
     background: #ececec;
     color: #000000;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
     border-radius: 5px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin: 10px;
     text-align: justify;
-    padding: 10px;
+    padding: 20px;
+    width: 800px;
+}
+
+.basicText
+{
+    background: #ececec;
+    color: #000000;
+    font-size: 14px;
+    border-radius: 5px;
+    margin: 10px;
+    text-align: justify;
+    padding: 20px;
     width: 800px;
 }

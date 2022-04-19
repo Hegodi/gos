@@ -648,6 +648,12 @@ function loadSimulation()
 						element.SetFromData(lines[i+1]);
 						simulation.arrayPasiveElements.push(element);
 						break;
+					case (ElementThickLens.description):
+						element = new ThickLens(0, 0);
+						console.log("Entity Added!");
+						element.SetFromData(lines[i+1]);
+						simulation.arrayPasiveElements.push(element);
+						break;
 					default:
 						textInfo.innerHTML = "WARNING: unkown element types: " + lines[i];
 						errors = true;

@@ -371,7 +371,6 @@ class InterfaceCurved extends SurfaceCurved
 		this.n1 = 1.0;
 		this.n2 = 2.0;
 	}
-
 }
 
 class InterfaceFlat extends SurfaceFlat
@@ -443,12 +442,56 @@ class ThickLens extends OrientableElement
 
 		this.surfaceAconvex = r1 >= 0.0;
 		this.surfaceBconvex = r2 >= 0.0;
-		this.edgesSurfaceA;
-		this.edgesSurfaceB;
 
 		this.SetValuesIfConsistent(150.0, 40.0, r1 == 0 ? RADIUS_INF : 200.0, r2 == 0 ? RADIUS_INF : 200.0);
 		this.setAngle(0.0);
 	}
+
+	GetData()
+	{
+		let data = super.GetData();
+		data += ";" + this.height + ";" + this.thickness.toString() + ";" + this.refractiveIndex + ";" + this.surfaceAconvex + ";" + this.surfaceBconvex;
+		for (let i=0; i<this.surfaces.length; i++)
+		{
+			data +=  "|" + this.surfaces[i].GetData();
+		}
+		return data;
+	}
+
+	SetFromData(data)
+	{
+		console.log("Start Loading");
+		let elementsData = data.split("|");
+		if (elementsData.length < 5)
+		{
+			throw(this.elementType);
+		}
+
+		let thisElement = elementsData[0];
+		super.SetFromData(thisElement);
+		let bits = thisElement.split(";");
+		if (bits.length < 8)
+		{
+			throw(this.elementType);
+		}
+		else
+		{
+			this.height = parseInt(bits[3]);
+			this.thickness = parseInt(bits[4]);
+			this.refractiveIndex = parseFloat(bits[5]);
+			this.surfaceAconvex = parseInt(bits[6]);
+			this.surfaceBconvex = parseInt(bits[7]);
+		}
+
+		for (let i=1; i<5; i++)
+		{
+			console.log(elementsData[i]);
+			this.surfaces[i-1].SetFromData(elementsData[i]);
+		}
+
+		this.setAngle(0.0);
+	}
+
 
 	Update()
 	{

@@ -261,6 +261,9 @@ class Simulation
 			case (ElementBlocker):
 				newElement = new SurfaceFlat(0,0,10, true);
 				break;
+			case (ElementThickLens):
+				newElement = new ThickLens(0,0);
+				break;
 		}
 
 		newElement = Object.assign(newElement, this.activeElement)
