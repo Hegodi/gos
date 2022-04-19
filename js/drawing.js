@@ -267,7 +267,7 @@ function DrawRay(context, ray)
 	}
 }
 
-function DrawThickLens(context, lens, ghost)
+function DrawThickLens(context, lens, ghost, showDetails)
 {
 	if (ghost)
 	{
@@ -307,6 +307,12 @@ function DrawThickLens(context, lens, ghost)
 		context.lineTo(p1.x, p1.y);
 		context.stroke();
 	}
+
+    if (showDetails)
+    {
+        DrawCurvedSurfaveDetails(context, lens.surfaces[0]);
+        DrawCurvedSurfaveDetails(context, lens.surfaces[1]);
+    }
 
 	/*
 	context.strokeStyle = "#FFFFFF";

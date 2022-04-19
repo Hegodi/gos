@@ -342,7 +342,7 @@ class Simulation
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementThickLens)
 			{
-				DrawThickLens(this.context,this.arrayPasiveElements[i], false);
+				DrawThickLens(this.context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 		}
 
