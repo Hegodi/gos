@@ -232,10 +232,15 @@ function SetSettingsFromActiveElement()
 	resetSettings();
 	if (simulation.activeElement == null)
 	{
+		textInfo.innerHTML = "Left click to select an object";
 		return;
 	}
 	panelSettings.style.display = "block";
 
+	if (!simulation.isActiveElementNew)
+	{
+		textInfo.innerHTML = "Mouse Wheel: rotate;  X: Delete;  C: Clone";
+	}
 
 	labelPositionX.innerHTML = simulation.activeElement.x;
 	labelPositionY.innerHTML = simulation.activeElement.y;
@@ -387,7 +392,7 @@ function OnElementValueSettingsChanged()
 
 function SetInEditMode()
 {
-	textInfo.innerHTML = "Left click at the center to select an object";
+	textInfo.innerHTML = "Left click to select objects";
 	deselectAllButtons();
 	mode = ModeEditElement;
 	simulation.isActiveElementNew = false;
@@ -538,7 +543,7 @@ function OnButtonToolClick(button)
 			button.className = "myButtonSelected";
 			simulation.toolRule.Reset();
 			simulation.toolRule.isActive = true;
-			textInfo.innerHTML = "Click in two points to measure the distance between them";
+			textInfo.innerHTML = "Measure distance: click in two points to measure the distance between them";
 		}
 	}
 	else if (button.id == "btnPortractor")
@@ -553,7 +558,7 @@ function OnButtonToolClick(button)
 			button.className = "myButtonSelected";
 			simulation.toolPortractor.Reset();
 			simulation.toolPortractor.isActive = true;
-			textInfo.innerHTML = "Click in two points to measure the distance between them";
+			textInfo.innerHTML = "Measure angles: first click on the vertex, then in two points along the segements which form the angle";
 		}
 	}
 
