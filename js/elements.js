@@ -444,8 +444,8 @@ class ThickLens extends OrientableElement
 		this.refractiveIndex = 2.0;
 		this.elementType = ElementThickLens;
 
-		this.surfaceAconvex = r1 >= 0.0;
-		this.surfaceBconvex = r2 >= 0.0;
+		this.surfaceAconvex = r1 >= 0.0 ? 1 : 0;
+		this.surfaceBconvex = r2 >= 0.0 ? 1 : 0;
 
 		this.SetValuesIfConsistent(150.0, 40.0, r1 == 0 ? RADIUS_INF : 200.0, r2 == 0 ? RADIUS_INF : 200.0);
 		this.setAngle(0.0);
@@ -471,7 +471,7 @@ class ThickLens extends OrientableElement
 	GetData()
 	{
 		let data = super.GetData();
-		data += ";" + this.height + ";" + this.thickness.toString() + ";" + this.refractiveIndex + ";" + this.surfaceAconvex + ";" + this.surfaceBconvex;
+		data += ";" + this.height + ";" + this.thickness.toString() + ";" + this.refractiveIndex.toString() + ";" + this.surfaceAconvex.toString() + ";" + this.surfaceBconvex.toString();
 		for (let i=0; i<this.surfaces.length; i++)
 		{
 			data +=  "|" + this.surfaces[i].GetData();
@@ -502,6 +502,7 @@ class ThickLens extends OrientableElement
 			this.refractiveIndex = parseFloat(bits[5]);
 			this.surfaceAconvex = parseInt(bits[6]);
 			this.surfaceBconvex = parseInt(bits[7]);
+			console.log(this.surfaceAconvex + " " + this.surfaceBconvex);
 		}
 
 		for (let i=1; i<5; i++)
@@ -509,8 +510,8 @@ class ThickLens extends OrientableElement
 			console.log(elementsData[i]);
 			this.surfaces[i-1].SetFromData(elementsData[i]);
 		}
-
-		this.setAngle(0.0);
+		this.setAngle(this.angle);
+		this.Update();
 	}
 
 
@@ -547,9 +548,6 @@ class ThickLens extends OrientableElement
 
 		this.surfaces[3].n1 = 1.0;
 		this.surfaces[3].n2 = this.refractiveIndex;
-
-		this.edgesSurfaceA = this.ComputeEdgesSurfaceA();
-		this.edgesSurfaceB = this.ComputeEdgesSurfaceB();
 
 		let cA = (1-Math.cos(0.5 * this.surfaces[0].arcAngle * Math.PI / 180.0)) * this.surfaces[0].radius;
 		let cB = (1-Math.cos(0.5 * this.surfaces[1].arcAngle * Math.PI / 180.0)) * this.surfaces[1].radius;
@@ -619,36 +617,6 @@ class ThickLens extends OrientableElement
 		{
 
 		}
-	}
-
-	GetCenterSurfaceA()
-	{
-		return this.surfaces[0].GetCenter();
-	}
-
-	GetCenterSurfaceB()
-	{
-		return this.surfaces[1].GetCenter();
-	}
-
-	ComputeEdgesSurfaceA()
-	{
-		return this.ComputeEdgesSurface(this.surfaces[0], -1);
-	}
-
-	ComputeEdgesSurfaceB()
-	{
-		return this.ComputeEdgesSurface(this.surfaces[1], 1);
-	}
-
-	ComputeEdgesSurface(surface, sign)
-	{
-		let cA = sign*Math.cos(0.5 * surface.arcAngle * Math.PI / 180.0) * surface.radius;
-		let sA = Math.sin(0.5 * surface.arcAngle * Math.PI / 180.0) * surface.radius;
-		let center = surface.GetCenter();
-		let pU   = {x: center.x + this.normalX * cA + this.tangentX * sA, y: center.y + this.normalY * cA  + this.tangentY * sA}
-		let pB = {x: center.x + this.normalX * cA - this.tangentX * sA, y: center.y + this.normalY * cA  - this.tangentY * sA}
-		return {pU: pU , pB: pB }
 	}
 
 	SetValuesIfConsistent(height, thickness, radiusA, radiusB)
@@ -763,9 +731,6 @@ function RefractionSurface(dir, bounce, surface)
 
 	let c = Math.cos(a2);
 	let s = Math.sin(a2);
-
-	console.log("n1: " + n1 + " n2: " + n2 + "  a1: " + a1Debug + "  a2: " + a2Debug);
-	console.log("surface.n1: " + surface.n1 + " surface.n2: " + surface.n2);
 
 	let dirX = normal.x * c - normal.y * s;
 	let dirY = normal.x * s + normal.y * c;
