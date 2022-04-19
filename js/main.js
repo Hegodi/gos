@@ -214,9 +214,9 @@ function setSettingsWidget(ind, label, value, min, max, step = 1, scale = 1.0)
 {
 	listSettings[ind].scale = 1.0;
 	listSettings[ind].labelName.innerHTML = label;
-	listSettings[ind].range.value = value / listSettings[ind].scale;
 	listSettings[ind].range.min = min;
 	listSettings[ind].range.max = max;
+	listSettings[ind].range.value = value / listSettings[ind].scale;
 	listSettings[ind].range.step = step;
 	listSettings[ind].value.min = min;
 	listSettings[ind].value.max = max;

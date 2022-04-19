@@ -261,10 +261,9 @@ canvas {
     font-family: inherit;
     font-weight: inherit;
     font-size: inherit;
-    width: 250px;
     display: inline-block;
     margin: 5px 10px 0px;
-    text-align: left;
+    text-align: right;
 }
 
 .myTextCentered {
