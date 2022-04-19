@@ -87,6 +87,13 @@ class Simulation
 		this.isActiveElementNew = true;
 	}
 
+	addThickLens()
+	{
+		this.activeElement = new ThickLens();
+		this.isActiveElementNew = true;
+		console.log("Add thick lens", this.activeElement);
+	}
+
 	confirmAddActiveElement()
 	{
 		if (this.activeElement == null)
@@ -105,6 +112,7 @@ class Simulation
 			case (ElementLensConverging):
 			case (ElementLensDiverging):
 			case (ElementBlocker):
+			case (ElementThickLens):
 				this.arrayPasiveElements.push(this.activeElement);
 				break;
 		}
@@ -127,6 +135,7 @@ class Simulation
 
 		this.activeElement.x = x;
 		this.activeElement.y = y;
+		this.activeElement.Update();
 		if (recalculate)
 		{
 			this.calculateRayTrace();
@@ -331,6 +340,10 @@ class Simulation
 			{
 				DrawBloquer(this.context,this.arrayPasiveElements[i], false);
 			}
+			else if (this.arrayPasiveElements[i].elementType == ElementThickLens)
+			{
+				DrawThickLens(this.context,this.arrayPasiveElements[i], false);
+			}
 		}
 
 		if (this.activeElement != null)
@@ -359,6 +372,9 @@ class Simulation
 						break;
 					case (ElementBlocker):
 						DrawBloquer(this.context,this.activeElement, true);
+						break;
+					case (ElementThickLens):
+						DrawThickLens(this.context,this.activeElement, true);
 						break;
 				}
 
@@ -445,6 +461,11 @@ class Simulation
 					case ElementMirrorCurved:
 						bounce = intersectionLineVsCircle(p0, p1, element.GetCenter(), element.radius, element.normalX, element.normalY, element.arcAngle);
 						break;
+					case ElementThickLens:
+						let result = intersectionWithThickLense(p0, p1, element);
+						bounce = result.bounce;
+						element = result.element;
+						break;
 
 				}
 
@@ -478,6 +499,13 @@ class Simulation
 						break;
 					case ElementBlocker:
 						done = true;
+						break;
+					case ElementThickLens:
+						console.log("ERROR:: this should never be hit!!")
+						break;
+					case ElementInterfaceCurve:
+					case ElementInterfaceFlat:
+						dir = RefractionSurface(dir, firstBounce, firstElement)
 						break;
 				}
 				lastPoint = {x: firstBounce.x, y:firstBounce.y};

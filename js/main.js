@@ -7,6 +7,9 @@ var selectElementType;
 const ModeAddElement = Symbol("ModeAddElement");
 const ModeEditElement = Symbol("ModeEditElement");
 const ModeDeleteElement = Symbol("ModeDeleteElement");
+
+const MaxNumberSettings = 6;
+
 var mode
 var mouseDown;
 var elementType = null;
@@ -41,12 +44,12 @@ function Start()
 
 	document.getElementById("textVersion").innerHTML = VERSION;
 
-	for (let i=1; i<5; i++)
+	for (let i=1; i<MaxNumberSettings+1; i++)
 	{
 		let labelName = document.getElementById("elementSettingsLabelName_" + i.toString());
 		let range = document.getElementById("elementSettingsRange_" + i.toString());
 		let value = document.getElementById("elementSettingsValue_" + i.toString());
-		listSettings.push({labelName:labelName, value: value, range:range});
+		listSettings.push({labelName:labelName, value: value, range:range, scale:1.0});
 		range.addEventListener("input", OnElementSlideSettingsChanged);
 		value.addEventListener("change", OnElementValueSettingsChanged);
 	}
@@ -192,10 +195,11 @@ function resetSettings()
 	panelSettings.style.display = "none";
 }
 
-function setSettingsWidget(ind, label, value, min, max)
+function setSettingsWidget(ind, label, value, min, max, scale = 1.0)
 {
+	listSettings[ind].scale = 1.0;
 	listSettings[ind].labelName.innerHTML = label;
-	listSettings[ind].range.value = value;
+	listSettings[ind].range.value = value / listSettings[ind].scale;
 	listSettings[ind].range.min = min;
 	listSettings[ind].range.max = max;
 	listSettings[ind].labelName.style.display = "block";
@@ -259,6 +263,15 @@ function SetSettingsFromActiveElement()
 			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500);
 			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
 			break;
+		case (ElementThickLens):
+			labelElementSelected.innerHTML = "Thick Lens";
+			setSettingsWidget(0, "Height", simulation.activeElement.height, 10, 500);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
+			setSettingsWidget(2, "Thickness", simulation.activeElement.thickness, 20, 200);
+			setSettingsWidget(3, "Radius A", simulation.activeElement.surfaces[0].radius, 10, 2000);
+			setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000);
+			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex * 100, 0, 1000);
+			break;
 	}
 	UpdateSettingsLabels();
 }
@@ -306,6 +319,16 @@ function OnElementSlideSettingsChanged()
 			simulation.activeElement.length = parseInt(listSettings[0].range.value);
 			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
 			break;
+		case (ElementThickLens):
+			let height = parseInt(listSettings[0].range.value);
+			let thickness = parseInt(listSettings[2].range.value);
+			let radiusA = parseInt(listSettings[3].range.value);
+			let radiusB = parseInt(listSettings[4].range.value);
+			simulation.activeElement.SetValuesIfConsistent(height, thickness, radiusA, radiusB);
+			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
+			simulation.activeElement.refractiveIndex = parseFloat(listSettings[5].range.value / 100);
+			SetSettingsFromActiveElement();
+			break;
 	}
 
 	simulation.refresh();
@@ -322,7 +345,7 @@ function UpdateSettingsLabels()
 
 function OnElementValueSettingsChanged()
 {
-	for (let i=0; i<4; i++)
+	for (let i=0; i<listSettings.length; i++)
 	{
 		listSettings[i].range.value = listSettings[i].value.value;
 	}
@@ -396,6 +419,12 @@ function OnButtonClick(element, index)
 	else if (element.id == "btnAddDivergingLens")
 	{
 		simulation.addDivergingLens(100.0, 50.0);
+		SetInAddingMode();
+		setSelected = true;
+	}
+	else if (element.id == "btnAddThickLens")
+	{
+		simulation.addThickLens();
 		SetInAddingMode();
 		setSelected = true;
 	}

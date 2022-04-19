@@ -7,6 +7,23 @@ const ElementMirrorCurved = Symbol("MirrorCurved");
 const ElementLensConverging = Symbol("LensConverging");
 const ElementLensDiverging = Symbol("LensDiverging");
 const ElementBlocker = Symbol("Blocker");
+const ElementThickLens = Symbol("ThickLens");
+const ElementInterfaceCurve = Symbol("InterfaceCurve");
+const ElementInterfaceFlat = Symbol("InterfaceFlat");
+
+const RADIUS_MAX = 1999;
+
+function Distance2(p0, p1)
+{
+	let dx = p1.x - p0.x;
+	let dy = p1.y - p0.y;
+	return dx * dx + dy * dy;
+}
+
+function Distance(p0, p1)
+{
+	return Math.sqrt(Distance2(p0,p1));
+}
 
 function intersectionLineVsLine(p0, p1, p2, p3, onlyInside)
 {
@@ -14,6 +31,10 @@ function intersectionLineVsLine(p0, p1, p2, p3, onlyInside)
 	let s2 = {x: p3.x - p2.x, y: p3.y - p2.y};
 
 	let d = (-s2.x * s1.y + s1.x * s2.y);
+	if (d == 0)
+	{
+		return null;
+	}
 	let s = (-s1.y * (p0.x - p2.x) + s1.x * (p0.y - p2.y)) / d;
 	let t = (s2.x * (p0.y - p2.y) - s2.y * (p0.x - p2.x)) / d;
 
@@ -157,6 +178,8 @@ class SourcePoint
         this.elementType = ElementSourcePoint;
 	}
 
+	Update() {}
+
 	GetData()
 	{
 		return this.x.toString() + ";" + this.y.toString() + ";" + this.numberRays.toString();
@@ -192,6 +215,8 @@ class OrientableElement
 		this.tangentY = 0;
 		this.setAngle(0.0);
 	}
+
+	Update() {};
 
 	setAngle(angle)
 	{
@@ -299,25 +324,17 @@ class SurfaceFlat extends OrientableElement
 
 class SurfaceCurved extends OrientableElement
 {
-	constructor(x, y, radius, arcAngle, mirror)
+	constructor(x, y, radius, arcAngle)
 	{
 		super(x,y)
 		this.radius = radius;
 		this.arcAngle = arcAngle;
-		if (mirror)
-		{
-        	this.elementType = ElementMirrorCurved;
-		}
+ 		this.elementType = ElementMirrorCurved;
 	}
 
 	GetData()
 	{
 		return super.GetData() + ";" + this.radius.toString() + ";" + this.arcAngle.toString();
-	}
-
-	GetArcAngles()
-	{
-		return {min: this.angle - parseFloat(this.arcAngle/2), max: this.angle + parseFloat(this.arcAngle/2)};
 	}
 
 	GetCenter()
@@ -341,6 +358,29 @@ class SurfaceCurved extends OrientableElement
 			this.radius = parseFloat(bits[3]);
 			this.arcAngle = parseFloat(bits[4]);
 		}
+	}
+}
+
+class InterfaceCurved extends SurfaceCurved
+{
+	constructor(x, y)
+	{
+		super(x,y,10, 30,)
+ 		this.elementType = ElementInterfaceCurve;
+		this.n1 = 1.0;
+		this.n2 = 2.0;
+	}
+
+}
+
+class InterfaceFlat extends SurfaceFlat
+{
+	constructor(x, y)
+	{
+		super(x,y,10, false);
+ 		this.elementType = ElementInterfaceFlat;
+		this.n1 = 1.0;
+		this.n2 = 1.0;
 	}
 }
 
@@ -384,4 +424,269 @@ class ThinLens extends OrientableElement
 	}
 }
 
+class ThickLens extends OrientableElement
+{
+	constructor()
+	{
+		super(0.0, 0.0);
+		this.height = 0.0;
+		this.thickness = 0.0;
+		this.surfaces = new Array();
+		this.surfaces.push(new InterfaceCurved(0,0));
+		this.surfaces.push(new InterfaceCurved(0,0));
+		this.surfaces.push(new InterfaceFlat(0,0));
+		this.surfaces.push(new InterfaceFlat(0,0));
 
+		this.refractiveIndex = 2.0;
+		this.elementType = ElementThickLens;
+
+		this.surfaceAconvex = true;
+		this.surfaceBconvex = true;
+		this.edgesSurfaceA;
+		this.edgesSurfaceB;
+
+		this.SetValuesIfConsistent(150.0, 20.0, 200.0, 200.0);
+		this.setAngle(0.0);
+	}
+
+	Update()
+	{
+		this.surfaces[0].x = this.x - this.normalX * this.thickness * 0.5;
+		this.surfaces[0].y = this.y - this.normalY * this.thickness * 0.5;
+		this.surfaces[0].n1 = 1.0;
+		this.surfaces[0].n2 = this.refractiveIndex;
+		
+		this.surfaces[1].x = this.x + this.normalX * this.thickness * 0.5;
+		this.surfaces[1].y = this.y + this.normalY * this.thickness * 0.5;
+		this.surfaces[1].n1 = 1.0;
+		this.surfaces[1].n2 = this.refractiveIndex;
+
+		this.surfaces[2].n1 = 1.0;
+		this.surfaces[2].n2 = this.refractiveIndex;
+
+		this.surfaces[3].n1 = this.refractiveIndex;
+		this.surfaces[3].n2 = 1.0;
+
+		this.edgesSurfaceA = this.ComputeEdgesSurfaceA();
+		this.edgesSurfaceB = this.ComputeEdgesSurfaceB();
+
+		let cA = (1-Math.cos(0.5 * this.surfaces[0].arcAngle * Math.PI / 180.0)) * this.surfaces[0].radius;
+		let cB = (1-Math.cos(0.5 * this.surfaces[1].arcAngle * Math.PI / 180.0)) * this.surfaces[1].radius;
+
+		let offset = 0.0;
+		let extraThickness = 0.0;
+		if (this.surfaceAconvex)
+		{
+			extraThickness -= cA;
+			offset += cA / 2;
+		}
+		else
+		{
+			extraThickness += cA;
+		}
+		if (this.surfaceAconvex)
+		{
+			extraThickness -= cB;
+			offset -= cB / 2;
+		}
+		else
+		{
+			extraThickness += cB;
+		}
+
+		this.surfaces[2].x = this.x + this.height * 0.5 * this.tangentX + this.normalX * offset;
+		this.surfaces[2].y = this.y + this.height * 0.5 * this.tangentY + this.normalY * offset;
+		this.surfaces[2].length = this.thickness + extraThickness;
+
+		this.surfaces[3].x = this.x - this.height * 0.5 * this.tangentX + this.normalX * offset;
+		this.surfaces[3].y = this.y - this.height * 0.5 * this.tangentY + this.normalY * offset;
+		this.surfaces[3].length = this.thickness + extraThickness;
+
+
+	}
+
+	setAngle(angle)
+	{
+		super.setAngle(angle);
+		try{
+
+			if (this.surfaceAconvex)
+			{
+				this.surfaces[0].setAngle(angle+180);
+			}
+			else
+			{
+				this.surfaces[0].setAngle(angle);
+			}
+
+			if (this.surfaceBconvex)
+			{
+				this.surfaces[1].setAngle(angle);
+			}
+			else
+			{
+				this.surfaces[1].setAngle(angle+180);
+			}
+			this.surfaces[2].setAngle(angle + 90);
+			this.surfaces[3].setAngle(angle - 90);
+			this.Update();
+		}
+		catch(e)
+		{
+
+		}
+	}
+
+	GetCenterSurfaceA()
+	{
+		return this.surfaces[0].GetCenter();
+	}
+
+	GetCenterSurfaceB()
+	{
+		return this.surfaces[1].GetCenter();
+	}
+
+	ComputeEdgesSurfaceA()
+	{
+		return this.ComputeEdgesSurface(this.surfaces[0], -1);
+	}
+
+	ComputeEdgesSurfaceB()
+	{
+		return this.ComputeEdgesSurface(this.surfaces[1], 1);
+	}
+
+	ComputeEdgesSurface(surface, sign)
+	{
+		let cA = sign*Math.cos(0.5 * surface.arcAngle * Math.PI / 180.0) * surface.radius;
+		let sA = Math.sin(0.5 * surface.arcAngle * Math.PI / 180.0) * surface.radius;
+		let center = surface.GetCenter();
+		let pU   = {x: center.x + this.normalX * cA + this.tangentX * sA, y: center.y + this.normalY * cA  + this.tangentY * sA}
+		let pB = {x: center.x + this.normalX * cA - this.tangentX * sA, y: center.y + this.normalY * cA  - this.tangentY * sA}
+		return {pU: pU , pB: pB }
+	}
+
+	SetValuesIfConsistent(height, thickness, radiusA, radiusB)
+	{
+		if (height/2 <= radiusA && height/2 <= radiusB)
+		{
+			this.height = height;
+			this.surfaces[0].radius = radiusA;
+			this.surfaces[1].radius = radiusB;
+		}
+		this.surfaces[0].arcAngle = 2 * Math.asin(this.height/(2 * this.surfaces[0].radius)) * 180.0 / Math.PI;
+		this.surfaces[1].arcAngle = 2 * Math.asin(this.height/(2 * this.surfaces[1].radius)) * 180.0 / Math.PI;
+
+		let thicknessMin = 0.0;
+		if (this.surfaceAconvex)
+		{
+			thicknessMin += (1.0 - Math.cos(0.5*this.surfaces[0].arcAngle * Math.PI / 180)) * this.surfaces[0].radius ;
+		}
+		if (this.surfaceBconvex)
+		{
+			thicknessMin += (1.0 - Math.cos(0.5*this.surfaces[1].arcAngle * Math.PI / 180)) * this.surfaces[1].radius ;
+		}
+		this.thickness = Math.max(thicknessMin, thickness);
+	}
+}
+
+
+function intersectionWithThickLense(p0, p1, lens)
+{
+	let firstBounce = null;
+	let firstSurface = null;
+	for (let i=0; i<lens.surfaces.length; i++)
+	{
+		let surface = lens.surfaces[i];
+		let bounce = null;
+		if (surface.elementType == ElementInterfaceFlat)
+		{
+			let lengthHalfX = surface.tangentX * surface.length * 0.5 ;
+			let lengthHalfY = surface.tangentY * surface.length * 0.5 ;
+			let p2 = {x: surface.x - lengthHalfX,  y: surface.y - lengthHalfY};
+			let p3 = {x: surface.x + lengthHalfX,  y: surface.y + lengthHalfY};
+			bounce = intersectionLineVsLine(p0, p1, p2, p3, true);
+		}
+		else if (surface.elementType == ElementInterfaceCurve)
+		{
+			bounce = intersectionLineVsCircle(p0, p1, surface.GetCenter(), surface.radius, surface.normalX, surface.normalY, surface.arcAngle);
+		}
+		
+		if (bounce != null && bounce.t > ErrorTolerance)
+		{
+			if (firstBounce == null || bounce.t < firstBounce.t)
+			{
+				firstBounce = bounce;
+				firstSurface = surface;;
+			}
+		}
+	}
+	return {bounce: firstBounce, element: firstSurface};
+}
+
+// dir and normal are normalized
+function RefractionSurface(dir, bounce, surface)
+{
+
+	let normal = null;
+	if (surface.elementType == ElementInterfaceFlat)
+	{
+		console.log("Flat");
+		normal = {x: surface.normalX, y: surface.normalY};
+	}
+	else if (surface.elementType == ElementInterfaceCurve)
+	{
+		console.log("Curved");
+		if (surface.radius > RADIUS_MAX)
+		{
+			normal = {x: surface.normalX, y: surface.normalY};
+		}
+		else
+		{
+			let center = surface.GetCenter();
+			normal = {x: (bounce.x - center.x)/surface.radius, y: (bounce.y - center.y)/surface.radius};
+		}
+	}
+
+	else
+	{
+		console.error("UNKNOWN SURFACE!!");
+	}
+
+	let n1 = surface.n1;
+	let n2 = surface.n2;
+	let dot = dir.x * normal.x + dir.y * normal.y;
+	if (dot < 0.0)
+	{
+		normal.x *= -1;
+		normal.y *= -1;
+		dot *= -1;
+		n1 = surface.n2;
+		n2 = surface.n1;
+	}
+
+	// n1 and n2 as swapped here due to how the angle/normals are computed
+	let a1 = Math.acos(dot);
+	let a2 = Math.asin(n2 * Math.sin(a1) / n1);
+
+	let cross = dir.x * normal.y - dir.y * normal.x;
+	if (cross > 0)
+	{
+		a2 *= -1;
+	}
+
+	let a1Debug = a1 * 180 / Math.PI;
+	let a2Debug = a2 * 180 / Math.PI;
+
+	let c = Math.cos(a2);
+	let s = Math.sin(a2);
+
+	console.log("n1: " + n1 + " n2: " + n2 + "  a1: " + a1Debug + "  a2: " + a2Debug);
+	console.log("surface.n1: " + surface.n1 + " surface.n2: " + surface.n2);
+
+	let dirX = normal.x * c - normal.y * s;
+	let dirY = normal.x * s + normal.y * c;
+
+	return {x: dirX, y: dirY}
+}

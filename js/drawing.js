@@ -266,3 +266,81 @@ function DrawRay(context, ray)
 		context.closePath();
 	}
 }
+
+function DrawThickLens(context, lens, ghost)
+{
+	if (ghost)
+	{
+		context.fillStyle = context.strokeStyle = "#41758c"
+	}
+	else
+	{
+		context.fillStyle = context.strokeStyle = "#7ad7ff"
+	}
+	context.lineWidth = 3;
+
+    let sA_angle0 = lens.surfaces[0].angle - lens.surfaces[0].arcAngle/2;
+    let sA_angle1 = lens.surfaces[0].angle + lens.surfaces[0].arcAngle/2;
+    let sA_center = lens.surfaces[0].GetCenter();
+    let sB_angle0 = lens.surfaces[1].angle - lens.surfaces[1].arcAngle/2;
+    let sB_angle1 = lens.surfaces[1].angle + lens.surfaces[1].arcAngle/2;
+    let sB_center = lens.surfaces[1].GetCenter();
+
+	context.beginPath();
+	context.arc(sA_center.x, sA_center.y, lens.surfaces[0].radius, sA_angle0 * Math.PI / 180.0, sA_angle1 * Math.PI / 180.0);
+	context.stroke();
+	context.closePath();
+
+	context.beginPath();
+	context.arc(sB_center.x, sB_center.y, lens.surfaces[1].radius, sB_angle0 * Math.PI / 180.0, sB_angle1 * Math.PI / 180.0);
+	context.stroke();
+	context.closePath();
+
+	for (let i=2; i<4; i++)
+	{
+		let sur = lens.surfaces[i];
+		let p0 = {x: sur.x - sur.tangentX * sur.length * 0.5, y: sur.y - sur.tangentY * sur.length * 0.5}
+		let p1 = {x: sur.x + sur.tangentX * sur.length * 0.5, y: sur.y + sur.tangentY * sur.length * 0.5}
+
+		context.beginPath();
+		context.moveTo(p0.x, p0.y);
+		context.lineTo(p1.x, p1.y);
+		context.stroke();
+	}
+
+	context.strokeStyle = "#FFFFFF";
+	for (let i=0; i<4; i++)
+	{
+		let sur = lens.surfaces[i];
+		let p0 = {x: sur.x, y: sur.y};
+		let p1 = {x: sur.x + sur.normalX * 100, y: sur.y + sur.normalY * 100};
+		context.beginPath();
+		context.moveTo(p0.x, p0.y);
+		context.lineTo(p1.x, p1.y);
+		context.stroke();
+
+	}
+	/*
+	let edgesA = lens.edgesSurfaceA;
+	let edgesB = lens.edgesSurfaceB;
+
+	context.beginPath();
+	context.moveTo(edgesA.pU.x, edgesA.pU.y);
+	context.lineTo(edgesB.pU.x, edgesB.pU.y);
+	context.stroke();
+	context.closePath();
+
+	context.beginPath();
+	context.moveTo(edgesA.pB.x, edgesA.pB.y);
+	context.lineTo(edgesB.pB.x, edgesB.pB.y);
+	context.stroke();
+	context.closePath();
+	*/
+
+	context.beginPath();
+	context.arc(lens.x, lens.y, 4, 0, 2*Math.PI);
+	context.fill();
+	context.closePath();
+
+
+}
