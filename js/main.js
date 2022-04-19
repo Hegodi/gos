@@ -8,6 +8,8 @@ const ModeAddElement = Symbol("ModeAddElement");
 const ModeEditElement = Symbol("ModeEditElement");
 const ModeDeleteElement = Symbol("ModeDeleteElement");
 
+const PRECISION_FLOAT = 0.01;
+
 const MaxNumberSettings = 6;
 
 var mode
@@ -195,13 +197,17 @@ function resetSettings()
 	panelSettings.style.display = "none";
 }
 
-function setSettingsWidget(ind, label, value, min, max, scale = 1.0)
+function setSettingsWidget(ind, label, value, min, max, step = 1, scale = 1.0)
 {
 	listSettings[ind].scale = 1.0;
 	listSettings[ind].labelName.innerHTML = label;
 	listSettings[ind].range.value = value / listSettings[ind].scale;
 	listSettings[ind].range.min = min;
 	listSettings[ind].range.max = max;
+	listSettings[ind].range.step = step;
+	listSettings[ind].value.min = min;
+	listSettings[ind].value.max = max;
+	listSettings[ind].value.step = step;
 	listSettings[ind].labelName.style.display = "block";
 	listSettings[ind].value.style.display = "block";
 	listSettings[ind].range.style.display = "block";
@@ -232,51 +238,51 @@ function SetSettingsFromActiveElement()
 		case (ElementSourceBeam):
 			labelElementSelected.innerHTML = "Beam";
 			setSettingsWidget(0, "N of rays", simulation.activeElement.numberRays, 2, 100);
-			setSettingsWidget(1, "Width", simulation.activeElement.length, 5, 500);
-			setSettingsWidget(2, "Rotation", simulation.activeElement.angle, 0, 360);
+			setSettingsWidget(1, "Width", simulation.activeElement.length, 5, 500, PRECISION_FLOAT);
+			setSettingsWidget(2, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
 			break;
 		case (ElementMirrorFlat):
 			labelElementSelected.innerHTML = "Flat Mirror";
-			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
+			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
 			break;
 		case (ElementMirrorCurved):
 			labelElementSelected.innerHTML = "Curved Mirror";
-			setSettingsWidget(0, "Radius", simulation.activeElement.radius, 1, 1000);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
-			setSettingsWidget(2, "Arc Angle", simulation.activeElement.arcAngle, 5, 360);
+			setSettingsWidget(0, "Radius", simulation.activeElement.radius, 1, 1000, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
+			setSettingsWidget(2, "Arc Angle", simulation.activeElement.arcAngle, 5, 360, PRECISION_FLOAT);
 			break;
 		case (ElementLensConverging):
 			labelElementSelected.innerHTML = "Converging Lens";
-			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
-			setSettingsWidget(2, "Focal Length", simulation.activeElement.focalLength, 10, 500);
+			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
+			setSettingsWidget(2, "Focal Length", simulation.activeElement.focalLength, 10, 500, PRECISION_FLOAT);
 			break;
 		case (ElementLensDiverging):
 			labelElementSelected.innerHTML = "Diverging Lens";
-			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
-			setSettingsWidget(2, "Focal Length", simulation.activeElement.focalLength, 10, 500);
+			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
+			setSettingsWidget(2, "Focal Length", simulation.activeElement.focalLength, 10, 500, PRECISION_FLOAT);
 			break;
 		case (ElementBlocker):
 			labelElementSelected.innerHTML = "Blocker";
-			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
+			setSettingsWidget(0, "Diameter", simulation.activeElement.length, 1, 500, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
 			break;
 		case (ElementThickLens):
 			labelElementSelected.innerHTML = "Thick Lens";
-			setSettingsWidget(0, "Height", simulation.activeElement.height, 10, 500);
-			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360);
-			setSettingsWidget(2, "Thickness", simulation.activeElement.thickness, 20, 200);
+			setSettingsWidget(0, "Height", simulation.activeElement.height, 10, 500, PRECISION_FLOAT);
+			setSettingsWidget(1, "Rotation", simulation.activeElement.angle, 0, 360, PRECISION_FLOAT);
+			setSettingsWidget(2, "Thickness", simulation.activeElement.thickness, 20, 200, PRECISION_FLOAT);
 			if (simulation.activeElement.surfaces[0].radius < RADIUS_INF)
 			{
-				setSettingsWidget(3, "Radius A", simulation.activeElement.surfaces[0].radius, 10, 2000);
+				setSettingsWidget(3, "Radius A", simulation.activeElement.surfaces[0].radius, 10, 2000, PRECISION_FLOAT);
 			}
 			if (simulation.activeElement.surfaces[1].radius < RADIUS_INF)
 			{
-				setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000);
+				setSettingsWidget(4, "Radius B", simulation.activeElement.surfaces[1].radius, 10, 2000, PRECISION_FLOAT);
 			}
-			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex * 100, 0, 1000);
+			setSettingsWidget(5, "Refractive Index", simulation.activeElement.refractiveIndex, PRECISION_FLOAT, 100, PRECISION_FLOAT);
 			break;
 	}
 	UpdateSettingsLabels();
@@ -299,48 +305,48 @@ function OnElementSlideSettingsChanged()
 			break;
 		case (ElementSourceBeam):
 			simulation.activeElement.numberRays = parseInt(listSettings[0].range.value);
-			simulation.activeElement.length = parseInt(listSettings[1].range.value);
-			simulation.activeElement.setAngle(parseInt(listSettings[2].range.value));
+			simulation.activeElement.length = parseFloat(listSettings[1].range.value);
+			simulation.activeElement.setAngle(listSettings[2].range.value);
 			break;
 		case (ElementMirrorFlat):
-			simulation.activeElement.length = parseInt(listSettings[0].range.value);
+			simulation.activeElement.length = parseFloat(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
 			break;
 		case (ElementMirrorCurved):
-			simulation.activeElement.radius = parseInt(listSettings[0].range.value);
+			simulation.activeElement.radius = parseFloat(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.arcAngle = parseInt(listSettings[2].range.value);
+			simulation.activeElement.arcAngle = parseFloat(listSettings[2].range.value);
 			break;
 		case (ElementLensConverging):
-			simulation.activeElement.length = parseInt(listSettings[0].range.value);
-			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.focalLength = parseInt(listSettings[2].range.value);
+			simulation.activeElement.length = parseFloat(listSettings[0].range.value);
+			simulation.activeElement.setAngle(parseFloat(listSettings[1].range.value));
+			simulation.activeElement.focalLength = parseFloat(listSettings[2].range.value);
 			break;
 		case (ElementLensDiverging):
-			simulation.activeElement.length = parseInt(listSettings[0].range.value);
+			simulation.activeElement.length = parseFloat(listSettings[0].range.value);
 			simulation.activeElement.setAngle(listSettings[1].range.value);
-			simulation.activeElement.focalLength = parseInt(listSettings[2].range.value);
+			simulation.activeElement.focalLength = parseFloat(listSettings[2].range.value);
 			break;
 		case (ElementBlocker):
-			simulation.activeElement.length = parseInt(listSettings[0].range.value);
-			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
+			simulation.activeElement.length = parseFloat(listSettings[0].range.value);
+			simulation.activeElement.setAngle(listSettings[1].range.value);
 			break;
 		case (ElementThickLens):
-			let height = parseInt(listSettings[0].range.value);
-			let thickness = parseInt(listSettings[2].range.value);
+			let height = parseFloat(listSettings[0].range.value);
+			let thickness = parseFloat(listSettings[2].range.value);
 			let radiusA = RADIUS_INF;
 			let radiusB = RADIUS_INF;
 			if (simulation.activeElement.surfaces[0].radius < RADIUS_INF)
 			{
-				radiusA = listSettings[3].range.value;
+				radiusA = parseFloat(listSettings[3].range.value);
 			}
 			if (simulation.activeElement.surfaces[1].radius < RADIUS_INF)
 			{
-				radiusB = listSettings[4].range.value;
+				radiusB = parseFloat(listSettings[4].range.value);
 			}
+			simulation.activeElement.refractiveIndex = parseFloat(listSettings[5].range.value);
 			simulation.activeElement.SetValuesIfConsistent(height, thickness, radiusA, radiusB);
-			simulation.activeElement.setAngle(parseInt(listSettings[1].range.value));
-			simulation.activeElement.refractiveIndex = parseFloat(listSettings[5].range.value / 100);
+			simulation.activeElement.setAngle(listSettings[1].range.value);
 			SetSettingsFromActiveElement();
 			break;
 	}
@@ -650,7 +656,6 @@ function loadSimulation()
 						break;
 					case (ElementThickLens.description):
 						element = new ThickLens(0, 0);
-						console.log("Entity Added!");
 						element.SetFromData(lines[i+1]);
 						simulation.arrayPasiveElements.push(element);
 						break;

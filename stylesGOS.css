@@ -260,7 +260,7 @@ canvas {
     font-family: inherit;
     font-weight: inherit;
     font-size: 12px;
-    width: 50px;
+    width: 70px;
     place-items: center;
     align-items: center;
     text-align: left;
@@ -291,37 +291,4 @@ canvas {
     position: absolute;
     top:18px;
     right: 5px;
-}
-
-.watermarkSmall1
-{
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: 14px;
-    color: inherit;
-    position: absolute;
-    top:25px;
-    left: 867px;
-}
-
-.watermarkSmall2
-{
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: 14px;
-    color: inherit;
-    position: absolute;
-    top:25px;
-    left: 969px;
-}
-
-.watermarkSmall3
-{
-    font-family: inherit;
-    font-weight: inherit;
-    font-size: 14px;
-    color: inherit;
-    position: absolute;
-    top:25px;
-    left: 1037px;
 }

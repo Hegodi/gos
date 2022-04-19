@@ -250,8 +250,8 @@ class OrientableElement
 		}
 		else
 		{
-			this.x = parseFloat(bits[0]);
-			this.y = parseFloat(bits[1]);
+			this.x = parseInt(bits[0]);
+			this.y = parseInt(bits[1]);
 			this.setAngle(parseFloat(bits[2]));
 		}
 	}
@@ -423,7 +423,7 @@ class ThinLens extends OrientableElement
 		else
 		{
 			this.length = parseFloat(bits[3]);
-			this.focalLength = parseInt(bits[4]);
+			this.focalLength = parseFloat(bits[4]);
 		}
 	}
 }
@@ -497,8 +497,8 @@ class ThickLens extends OrientableElement
 		}
 		else
 		{
-			this.height = parseInt(bits[3]);
-			this.thickness = parseInt(bits[4]);
+			this.height = parseFloat(bits[3]);
+			this.thickness = parseFloat(bits[4]);
 			this.refractiveIndex = parseFloat(bits[5]);
 			this.surfaceAconvex = parseInt(bits[6]);
 			this.surfaceBconvex = parseInt(bits[7]);
@@ -511,7 +511,6 @@ class ThickLens extends OrientableElement
 			this.surfaces[i-1].SetFromData(elementsData[i]);
 		}
 		this.setAngle(this.angle);
-		this.Update();
 	}
 
 
@@ -584,12 +583,14 @@ class ThickLens extends OrientableElement
 		this.surfaces[3].y = this.y - this.height * 0.5 * this.tangentY + this.normalY * offset;
 		this.surfaces[3].length = this.thickness + extraThickness;
 
+		console.log("Update");
 
 	}
 
 	setAngle(angle)
 	{
 		super.setAngle(angle);
+		angle = parseFloat(angle);
 		try{
 
 			if (this.surfaceAconvex)
@@ -617,6 +618,8 @@ class ThickLens extends OrientableElement
 		{
 
 		}
+		console.log("SetAngle");
+
 	}
 
 	SetValuesIfConsistent(height, thickness, radiusA, radiusB)
@@ -640,6 +643,7 @@ class ThickLens extends OrientableElement
 			thicknessMin += (1.0 - Math.cos(0.5*this.surfaces[1].arcAngle * Math.PI / 180)) * this.surfaces[1].radius ;
 		}
 		this.thickness = Math.max(thicknessMin, thickness);
+		console.log("SetValuesIfConsistent");
 	}
 }
 
