@@ -167,7 +167,11 @@ function calculateLens(rayDir, hitPos, lens, diverging)
 	let intersection = intersectionLineVsLine(p, o, h, f, false)
 	if (intersection != null)
 	{
-		return {x: hitPos.x - intersection.x, y: hitPos.y - intersection.y};
+		dir = {x: hitPos.x - intersection.x, y: hitPos.y - intersection.y};
+		let dirMod = dir.x * dir.x + dir.y*dir.y;
+		dir.x /= dirMod;
+		dir.y /= dirMod;
+		return dir;
 	}
 	return null;
 }
@@ -678,7 +682,7 @@ function intersectionWithThickLense(p0, p1, lens)
 // dir and normal are normalized
 function RefractionSurface(dir, bounce, surface)
 {
-
+	console.log("DIR: " + dir.x + ", " + dir.y);
 	let normal = null;
 	if (surface.elementType == ElementInterfaceFlat)
 	{
@@ -696,12 +700,12 @@ function RefractionSurface(dir, bounce, surface)
 			normal = {x: (bounce.x - center.x)/surface.radius, y: (bounce.y - center.y)/surface.radius};
 		}
 	}
-
 	else
 	{
 		console.error("UNKNOWN SURFACE!!");
 	}
 
+	console.log("Normal: " + normal.x + ", " + normal.y);
 	let n1 = surface.n1;
 	let n2 = surface.n2;
 	let dot = dir.x * normal.x + dir.y * normal.y;
