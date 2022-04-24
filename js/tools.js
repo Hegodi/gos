@@ -91,7 +91,7 @@ class Portractor
         {
             let v1 = {x: this.points[1].x - this.points[0].x, y: this.points[1].y - this.points[0].y};
             let v2 = {x: this.points[2].x - this.points[0].x, y: this.points[2].y - this.points[0].y};
-            let dot = v1.x * v2.x + v1.y * v1.y;
+            let dot = v1.x * v2.x + v1.y * v2.y;
             this.angle = Math.acos(dot / (Math.sqrt(v1.x*v1.x + v1.y*v1.y) * Math.sqrt(v2.x*v2.x + v2.y*v2.y))) * 180.0 / Math.PI;
         }
     }
