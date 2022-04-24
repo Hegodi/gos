@@ -2,7 +2,7 @@ const MaxBounces = 10;
 const MaxDistanceBetweenBounces = 10000;
 const ErrorTolerance = 1e-12;
 const SelectDstSqr = 250;
-const VERSION = "v1.2"
+const VERSION = "v1.21"
 
 
 class Ray
