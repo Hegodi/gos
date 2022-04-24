@@ -12,3 +12,13 @@ Version 1.1:
 	- Curved Mirror
 	- Add version control to saved results
 	- Add Draw details option
+
+Version 1.2:
+	- Thick lenses 
+	- Physical Units 
+	- Utils: rule and protractor
+
+Version 1.21:
+	- Fix bug when using a thick lenses after an ideal converging/diverging lens
+	- Add text to details view to differenciate between focal distance and radius
+	- Fix portractor NaN
