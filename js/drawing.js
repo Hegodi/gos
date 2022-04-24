@@ -235,6 +235,13 @@ function DrawLensDetails(context, lens)
     context.arc(f2.x, f2.y, 3, 0, 2 * Math.PI);
     context.fill();
     context.closePath();
+
+	context.beginPath();
+	context.font = '18px arial';
+	context.textAlign = "center";
+	context.fillText("F", f1.x, f1.y + 25);
+	context.fillText("F", f2.x, f2.y + 25);
+	context.closePath();
 }
 
 function DrawCurvedSurfaveDetails(context, surface)
@@ -252,6 +259,12 @@ function DrawCurvedSurfaveDetails(context, surface)
     context.arc(center.x, center.y, 3, 0, 2 * Math.PI);
     context.fill();
     context.closePath();
+
+	context.beginPath();
+	context.font = '18px arial';
+	context.textAlign = "center";
+	context.fillText("C", center.x, center.y + 25);
+	context.closePath();
 }
 
 
