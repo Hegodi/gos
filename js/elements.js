@@ -168,7 +168,7 @@ function calculateLens(rayDir, hitPos, lens, diverging)
 	if (intersection != null)
 	{
 		dir = {x: hitPos.x - intersection.x, y: hitPos.y - intersection.y};
-		let dirMod = dir.x * dir.x + dir.y*dir.y;
+		let dirMod = Math.sqrt(dir.x * dir.x + dir.y*dir.y);
 		dir.x /= dirMod;
 		dir.y /= dirMod;
 		return dir;
