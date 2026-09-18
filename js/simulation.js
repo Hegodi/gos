@@ -42,11 +42,17 @@ class Simulation
 
 		this.toolRule = new Ruler();
 		this.toolPortractor = new Portractor();
+		this.toolExportArea = new ExportArea();
 	}
 
 	screenToWorld(x, y)
 	{
 		return {x: (x - this.panX) / this.zoom, y: (y - this.panY) / this.zoom};
+	}
+
+	worldToScreen(x, y)
+	{
+		return {x: x * this.zoom + this.panX, y: y * this.zoom + this.panY};
 	}
 
 	zoomAt(screenX, screenY, factor)
@@ -317,15 +323,15 @@ class Simulation
 	}
 
 
-	render()
+	render(context = this.context, exporting = false)
 	{
-		this.context.setTransform(1, 0, 0, 1, 0, 0);
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context.setTransform(this.zoom, 0, 0, this.zoom, this.panX, this.panY);
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		context.setTransform(this.zoom, 0, 0, this.zoom, this.panX, this.panY);
 
 		// Grid
-		this.context.strokeStyle = "#444444";
-		this.context.lineWidth = 0.5 / this.zoom;
+		context.strokeStyle = "#444444";
+		context.lineWidth = 0.5 / this.zoom;
 		if (this.gridEnabled)
 		{
 			let worldLeft = this.screenToWorld(0, 0).x;
@@ -336,21 +342,21 @@ class Simulation
 			let xStart = Math.floor(worldLeft / this.gridSize) * this.gridSize;
 			for (let x = xStart; x < worldRight; x += this.gridSize)
 			{
-				DrawGridLine(this.context, x, worldTop, x, worldBottom);
+				DrawGridLine(context, x, worldTop, x, worldBottom);
 			}
 
 			let yStart = Math.floor(worldTop / this.gridSize) * this.gridSize;
 			for (let y = yStart; y < worldBottom; y += this.gridSize)
 			{
-				DrawGridLine(this.context, worldLeft, y, worldRight, y);
+				DrawGridLine(context, worldLeft, y, worldRight, y);
 			}
 		}
 
-		this.context.strokeStyle = "#888800";
-		this.context.lineWidth = 1.0;
+		context.strokeStyle = "#888800";
+		context.lineWidth = 1.0;
 		for(let i=0; i<this.rays.length; i++)
 		{
-			DrawRay(this.context,this.rays[i]);
+			DrawRay(context,this.rays[i]);
 		}
 
 
@@ -359,11 +365,11 @@ class Simulation
 		{
 			if (this.arraySources[i].elementType == ElementSourcePoint)
 			{
-				DrawSourcePoint(this.context,this.arraySources[i], false);
+				DrawSourcePoint(context,this.arraySources[i], false);
 			}
 			else if (this.arraySources[i].elementType == ElementSourceBeam)
 			{
-				DrawSourceBeam(this.context,this.arraySources[i], false);
+				DrawSourceBeam(context,this.arraySources[i], false);
 			}
 		}
 
@@ -372,27 +378,27 @@ class Simulation
 		{
 			if (this.arrayPasiveElements[i].elementType == ElementMirrorFlat)
 			{
-				DrawMirroFlat(this.context,this.arrayPasiveElements[i], false);
+				DrawMirroFlat(context,this.arrayPasiveElements[i], false);
 			}
 			if (this.arrayPasiveElements[i].elementType == ElementMirrorCurved)
 			{
-				DrawMirroCurved(this.context,this.arrayPasiveElements[i], false, this.showDetails);
+				DrawMirroCurved(context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensConverging)
 			{
-				DrawLensConverging(this.context,this.arrayPasiveElements[i], false, this.showDetails);
+				DrawLensConverging(context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementLensDiverging)
 			{
-				DrawLensDiverging(this.context,this.arrayPasiveElements[i], false, this.showDetails);
+				DrawLensDiverging(context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementBlocker)
 			{
-				DrawBloquer(this.context,this.arrayPasiveElements[i], false);
+				DrawBloquer(context,this.arrayPasiveElements[i], false);
 			}
 			else if (this.arrayPasiveElements[i].elementType == ElementThickLens)
 			{
-				DrawThickLens(this.context,this.arrayPasiveElements[i], false, this.showDetails);
+				DrawThickLens(context,this.arrayPasiveElements[i], false, this.showDetails);
 			}
 		}
 
@@ -403,46 +409,51 @@ class Simulation
 				switch(this.activeElement.elementType)
 				{
 					case (ElementSourcePoint):
-						DrawSourcePoint(this.context,this.activeElement, true);
+						DrawSourcePoint(context,this.activeElement, true);
 						break;
 					case (ElementSourceBeam):
-						DrawSourceBeam(this.context,this.activeElement, true);
+						DrawSourceBeam(context,this.activeElement, true);
 						break;
 					case (ElementMirrorFlat):
-						DrawMirroFlat(this.context,this.activeElement, true);
+						DrawMirroFlat(context,this.activeElement, true);
 						break;
 					case (ElementMirrorCurved):
-						DrawMirroCurved(this.context,this.activeElement, true);
+						DrawMirroCurved(context,this.activeElement, true);
 						break;
 					case (ElementLensConverging):
-						DrawLensConverging(this.context,this.activeElement, true);
+						DrawLensConverging(context,this.activeElement, true);
 						break;
 					case (ElementLensDiverging):
-						DrawLensDiverging(this.context,this.activeElement, true);
+						DrawLensDiverging(context,this.activeElement, true);
 						break;
 					case (ElementBlocker):
-						DrawBloquer(this.context,this.activeElement, true);
+						DrawBloquer(context,this.activeElement, true);
 						break;
 					case (ElementThickLens):
-						DrawThickLens(this.context,this.activeElement, true);
+						DrawThickLens(context,this.activeElement, true);
 						break;
 				}
 
 			}
 			else
 			{
-				this.context.strokeStyle = "white";
-				this.context.lineWidth = 2.0;
-				this.context.beginPath();
-				this.context.arc(this.activeElement.x, this.activeElement.y, 15, 0, Math.PI*2, false);
-				this.context.stroke();
-				this.context.closePath();
+				context.strokeStyle = "white";
+				context.lineWidth = 2.0;
+				context.beginPath();
+				context.arc(this.activeElement.x, this.activeElement.y, 15, 0, Math.PI*2, false);
+				context.stroke();
+				context.closePath();
 			}
 		}
 		else
 		{
-			this.toolRule.Draw(this.context)
-			this.toolPortractor.Draw(this.context);
+			this.toolRule.Draw(context)
+			this.toolPortractor.Draw(context);
+		}
+
+		if (!exporting)
+		{
+			this.toolExportArea.Draw(context);
 		}
 	}
 
@@ -588,5 +599,7 @@ class Simulation
 
 		this.toolPortractor.Reset();
 		this.toolPortractor.isActive = false;
+
+		this.toolExportArea.AbortSelection();
 	}
 }

@@ -151,3 +151,68 @@ class Portractor
         this.angle = 0.0;
     }
 }
+
+class ExportArea
+{
+    constructor()
+    {
+        this.points = new Array();
+        this.isActive = false;
+        this.rect = null;
+    }
+
+    SetPoint(point)
+    {
+        this.points.push(point);
+        if (this.points.length >= 2)
+        {
+            let x0 = Math.min(this.points[0].x, this.points[1].x);
+            let y0 = Math.min(this.points[0].y, this.points[1].y);
+            let x1 = Math.max(this.points[0].x, this.points[1].x);
+            let y1 = Math.max(this.points[0].y, this.points[1].y);
+            this.rect = {x: x0, y: y0, w: x1 - x0, h: y1 - y0};
+            this.points.length = 0;
+            this.isActive = false;
+        }
+    }
+
+    AbortSelection()
+    {
+        this.points.length = 0;
+        this.isActive = false;
+    }
+
+    Clear()
+    {
+        this.points.length = 0;
+        this.rect = null;
+        this.isActive = false;
+    }
+
+    Draw(context)
+    {
+        if (this.points.length == 0 && this.rect == null)
+        {
+            return;
+        }
+
+        context.strokeStyle = "#00CCFF";
+        context.lineWidth = 2;
+
+        for (let i=0; i<this.points.length; i++)
+        {
+            context.beginPath();
+            context.arc(this.points[i].x, this.points[i].y, 5, 0, Math.PI * 2);
+            context.stroke();
+            context.closePath();
+        }
+
+        if (this.rect != null)
+        {
+            context.beginPath();
+            context.rect(this.rect.x, this.rect.y, this.rect.w, this.rect.h);
+            context.stroke();
+            context.closePath();
+        }
+    }
+}

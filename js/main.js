@@ -126,6 +126,16 @@ function OnMouseDown(event)
 			simulation.toolPortractor.SetPoint({x:world.x, y:world.y});
 			simulation.render();
 		}
+		else if (simulation.toolExportArea.isActive)
+		{
+			simulation.toolExportArea.SetPoint({x:world.x, y:world.y});
+			simulation.render();
+			if (simulation.toolExportArea.rect != null)
+			{
+				SetInEditMode();
+				textInfo.innerHTML = "Export area selected. Use Export PNG / Export SVG to export it, or Clear Area to reset";
+			}
+		}
 	}
 }
 
@@ -621,7 +631,29 @@ function OnButtonToolClick(button)
 			textInfo.innerHTML = "Measure angles: first click on the vertex, then in two points along the segements which form the angle";
 		}
 	}
+	else if (button.id == "btnSelectArea")
+	{
+		if (button.className == "myButtonSelected")
+		{
+			SetInEditMode();
+		}
+		else
+		{
+			SetInToolsMode();
+			button.className = "myButtonSelected";
+			simulation.toolExportArea.AbortSelection();
+			simulation.toolExportArea.isActive = true;
+			textInfo.innerHTML = "Select export area: click two opposite corners of the area to export";
+		}
+	}
 
+}
+
+function OnClearExportArea()
+{
+	simulation.toolExportArea.Clear();
+	simulation.render();
+	textInfo.innerHTML = "Export area cleared";
 }
 
 
@@ -646,7 +678,63 @@ function OnDeleteSelected()
 	SetSettingsFromActiveElement();
 }
 
+function getExportRect(simulation)
+{
+	let rect = simulation.toolExportArea.rect;
+	if (rect == null)
+	{
+		return {x: 0, y: 0, w: simulation.canvas.width, h: simulation.canvas.height};
+	}
+
+	let p0 = simulation.worldToScreen(rect.x, rect.y);
+	let p1 = simulation.worldToScreen(rect.x + rect.w, rect.y + rect.h);
+	let x0 = Math.max(0, Math.min(p0.x, p1.x));
+	let y0 = Math.max(0, Math.min(p0.y, p1.y));
+	let x1 = Math.min(simulation.canvas.width, Math.max(p0.x, p1.x));
+	let y1 = Math.min(simulation.canvas.height, Math.max(p0.y, p1.y));
+
+	return {x: x0, y: y0, w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0)};
+}
+
 function ExportPNG(simulation)
+{
+	SetInEditMode();
+	deselectAllButtons();
+	simulation.activeElement = null;
+	simulation.isActiveElementNew = null;
+	simulation.render(simulation.context, true);
+
+	let filename = document.getElementById("saveFilename").value;
+	if (filename == "")
+	{
+		filename = "NewSimulation";
+	}
+
+	let rect = getExportRect(simulation);
+	let dataUrl;
+	if (rect.x == 0 && rect.y == 0 && rect.w == simulation.canvas.width && rect.h == simulation.canvas.height)
+	{
+		dataUrl = simulation.canvas.toDataURL();
+	}
+	else
+	{
+		let cropCanvas = document.createElement("canvas");
+		cropCanvas.width = rect.w;
+		cropCanvas.height = rect.h;
+		cropCanvas.getContext("2d").drawImage(simulation.canvas, rect.x, rect.y, rect.w, rect.h, 0, 0, rect.w, rect.h);
+		dataUrl = cropCanvas.toDataURL();
+	}
+
+	var anchor = document.getElementById("downloadLink");
+	anchor.href = dataUrl;
+	anchor.download = filename + ".png";
+	anchor.innerHTML ="click to download";
+	anchor.click();
+	textInfo.innerHTML = "Click in the link if the file was not downloaded";
+	simulation.render();
+}
+
+function ExportSVG(simulation)
 {
 	SetInEditMode();
 	deselectAllButtons();
@@ -660,9 +748,14 @@ function ExportPNG(simulation)
 		filename = "NewSimulation";
 	}
 
+	let rect = getExportRect(simulation);
+	let svgContext = new SvgContext2D(simulation.canvas.width, simulation.canvas.height);
+	simulation.render(svgContext, true);
+	let blob = new Blob([svgContext.toSvgString(simulation.toolExportArea.rect != null ? rect : null)], {type: "image/svg+xml"});
+
 	var anchor = document.getElementById("downloadLink");
-	anchor.href = simulation.canvas.toDataURL();
-	anchor.download = filename + ".png";
+	anchor.href = window.URL.createObjectURL(blob);
+	anchor.download = filename + ".svg";
 	anchor.innerHTML ="click to download";
 	anchor.click();
 	textInfo.innerHTML = "Click in the link if the file was not downloaded";

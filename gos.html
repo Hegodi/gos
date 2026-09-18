@@ -7,6 +7,7 @@
     <script src="js/tools.js"></script>
     <script src="js/elements.js"></script>
     <script src="js/drawing.js"></script>
+    <script src="js/svgExport.js"></script>
     <script src="js/simulation.js"></script>
     <script src="js/main.js"></script>
 </head>
@@ -18,6 +19,7 @@
     <button class="myButtonTop" id="btnClearAll" onclick="OnButtonClick(this)">New Simulation</button>
     <button class="myButtonTop" id="btnSave" onclick="downloadCurrentSimulation(simulation)">Save Simulation</button>
     <button class="myButtonTop" id="btnExport" onclick="ExportPNG(simulation)">Export PNG</button>
+    <button class="myButtonTop" id="btnExportSVG" onclick="ExportSVG(simulation)">Export SVG</button>
     <input type="text" id="saveFilename" class="myText">
     <a id="downloadLink" class="myText">click to download</a>
     <button class="myButtonTop" id="btnLoad" onclick="loadSimulation(simulation)">Load File</button>
@@ -109,6 +111,8 @@
 <div class="toolBarTools">
   <button class="myButton" id="btnRule" onclick="OnButtonToolClick(this)">Rule</button>
   <button class="myButton" id="btnPortractor" onclick="OnButtonToolClick(this)">Portractor</button>
+  <button class="myButton" id="btnSelectArea" onclick="OnButtonToolClick(this)">Select Export Area</button>
+  <button class="myButton" id="btnClearArea" onclick="OnClearExportArea()">Clear Area</button>
 </div>
 
 <canvas id="canvasSimulation" width="1000" height="1000"> </canvas>
