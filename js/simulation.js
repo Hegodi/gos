@@ -34,8 +34,43 @@ class Simulation
 		this.gridSize = 50;
 		this.showDetails = false;
 
+		this.zoom = 1;
+		this.panX = 0;
+		this.panY = 0;
+		this.minZoom = 0.1;
+		this.maxZoom = 8;
+
 		this.toolRule = new Ruler();
 		this.toolPortractor = new Portractor();
+	}
+
+	screenToWorld(x, y)
+	{
+		return {x: (x - this.panX) / this.zoom, y: (y - this.panY) / this.zoom};
+	}
+
+	zoomAt(screenX, screenY, factor)
+	{
+		let newZoom = Math.min(this.maxZoom, Math.max(this.minZoom, this.zoom * factor));
+		this.panX = screenX - (screenX - this.panX) * (newZoom / this.zoom);
+		this.panY = screenY - (screenY - this.panY) * (newZoom / this.zoom);
+		this.zoom = newZoom;
+		this.render();
+	}
+
+	pan(dx, dy)
+	{
+		this.panX += dx;
+		this.panY += dy;
+		this.render();
+	}
+
+	resetView()
+	{
+		this.zoom = 1;
+		this.panX = 0;
+		this.panY = 0;
+		this.render();
 	}
 
 	reset()
@@ -284,26 +319,30 @@ class Simulation
 
 	render()
 	{
+		this.context.setTransform(1, 0, 0, 1, 0, 0);
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context.setTransform(this.zoom, 0, 0, this.zoom, this.panX, this.panY);
 
 		// Grid
 		this.context.strokeStyle = "#444444";
-		this.context.lineWidth = 0.5;
+		this.context.lineWidth = 0.5 / this.zoom;
 		if (this.gridEnabled)
 		{
-			let numWidth = this.canvas.width / this.gridSize + 1;
-			let numHeight = this.canvas.height / this.gridSize + 1;
-			console.log("Grid Size: " + this.gridSize);
-			let x = 0;
-			for (let i=0; i<numWidth; i++, x += this.gridSize)
+			let worldLeft = this.screenToWorld(0, 0).x;
+			let worldTop = this.screenToWorld(0, 0).y;
+			let worldRight = this.screenToWorld(this.canvas.width, this.canvas.height).x;
+			let worldBottom = this.screenToWorld(this.canvas.width, this.canvas.height).y;
+
+			let xStart = Math.floor(worldLeft / this.gridSize) * this.gridSize;
+			for (let x = xStart; x < worldRight; x += this.gridSize)
 			{
-				DrawGridLine(this.context,x, 0, x, this.canvas.height);
+				DrawGridLine(this.context, x, worldTop, x, worldBottom);
 			}
 
-			let y = 0;
-			for (let i=0; i<numHeight; i++, y+=this.gridSize)
+			let yStart = Math.floor(worldTop / this.gridSize) * this.gridSize;
+			for (let y = yStart; y < worldBottom; y += this.gridSize)
 			{
-				DrawGridLine(this.context,0, y, this.canvas.width, y);
+				DrawGridLine(this.context, worldLeft, y, worldRight, y);
 			}
 		}
 

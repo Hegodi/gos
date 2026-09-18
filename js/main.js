@@ -14,6 +14,9 @@ const MaxNumberSettings = 6;
 
 var mode
 var mouseDown;
+var isPanning = false;
+var lastPanPoint;
+var labelZoom;
 var elementType = null;
 var listSettings = new Array();
 var labelPositionX;
@@ -41,7 +44,7 @@ function Start()
 	canvas.addEventListener('mouseup', OnMouseUp);
 	canvas.addEventListener('mousemove', OnMouseMove);
 	document.addEventListener('keypress', OnKeyPressed);
-	document.addEventListener('wheel', OnMouseWheel);
+	document.addEventListener('wheel', OnMouseWheel, {passive: false});
 	simulation = new Simulation(context, canvas);
 
 	document.getElementById("textVersion").innerHTML = VERSION;
@@ -72,6 +75,8 @@ function Start()
 	textInfo = document.getElementById("textInfo");
 	textInfo.innerHTML ="Welcome to GOS " + VERSION;
 
+	labelZoom = document.getElementById("labelZoom");
+
 	resetSettings();
 	mouseDown = false;
 	NewSimulation();
@@ -86,29 +91,39 @@ function OnMouseDown(event)
 		SetInEditMode();
 		return;
 	}
+	if (event.button == 1)
+	{
+		isPanning = true;
+		lastPanPoint = {x: event.offsetX, y: event.offsetY};
+		event.preventDefault();
+		return;
+	}
+
 	mouseDown = true;
+
+	let world = simulation.screenToWorld(event.offsetX, event.offsetY);
 
 	if (mode == ModeAddElement)
 	{
 		simulation.confirmAddActiveElement();
-		lastClickPoint = {x: event.offsetX, y: event.offsetY};
+		lastClickPoint = {x: world.x, y: world.y};
 		SetInEditMode();
 	}
 	else if (mode == ModeEditElement)
 	{
-		simulation.trySelectElement(event.offsetX, event.offsetY);
+		simulation.trySelectElement(world.x, world.y);
 		SetSettingsFromActiveElement();
 	}
 	else if (mode == ModeTools)
 	{
 		if (simulation.toolRule.isActive)
 		{
-			simulation.toolRule.SetPoint({x:event.offsetX, y:event.offsetY});
+			simulation.toolRule.SetPoint({x:world.x, y:world.y});
 			simulation.render();
 		}
 		else if (simulation.toolPortractor.isActive)
 		{
-			simulation.toolPortractor.SetPoint({x:event.offsetX, y:event.offsetY});
+			simulation.toolPortractor.SetPoint({x:world.x, y:world.y});
 			simulation.render();
 		}
 	}
@@ -126,21 +141,31 @@ function OnMouseUp(event)
 {
 	//simulation.addSourcePoint(event.offsetX, event.offsetY, 36);
 	mouseDown = false;
+	isPanning = false;
 }
 
 function OnMouseMove(event)
 {
+	if (isPanning)
+	{
+		simulation.pan(event.offsetX - lastPanPoint.x, event.offsetY - lastPanPoint.y);
+		lastPanPoint = {x: event.offsetX, y: event.offsetY};
+		return;
+	}
+
+	let world = simulation.screenToWorld(event.offsetX, event.offsetY);
+
 	if (mode == ModeEditElement)
 	{
 		if (mouseDown)
 		{
-			MoveActiveElement(event.offsetX, event.offsetY, true);
+			MoveActiveElement(world.x, world.y, true);
 			SetSettingsFromActiveElement();
 		}
 	}
 	else if (mode == ModeAddElement)
 	{
-		MoveActiveElement(event.offsetX, event.offsetY, false);
+		MoveActiveElement(world.x, world.y, false);
 	}
 }
 
@@ -177,6 +202,15 @@ function OnKeyPressed(event)
 
 function OnMouseWheel(event)
 {
+	if (event.ctrlKey || event.metaKey || simulation.activeElement == null)
+	{
+		event.preventDefault();
+		let factor = event.deltaY < 0 ? 1.1 : 1/1.1;
+		simulation.zoomAt(event.offsetX, event.offsetY, factor);
+		UpdateZoomLabel();
+		return;
+	}
+
 	if (mode != ModeEditElement)
 	{
 		return;
@@ -194,6 +228,32 @@ function OnMouseWheel(event)
 		{
 			simulation.refresh();
 		}
+	}
+}
+
+function OnZoomIn()
+{
+	simulation.zoomAt(simulation.canvas.width/2, simulation.canvas.height/2, 1.25);
+	UpdateZoomLabel();
+}
+
+function OnZoomOut()
+{
+	simulation.zoomAt(simulation.canvas.width/2, simulation.canvas.height/2, 1/1.25);
+	UpdateZoomLabel();
+}
+
+function OnZoomReset()
+{
+	simulation.resetView();
+	UpdateZoomLabel();
+}
+
+function UpdateZoomLabel()
+{
+	if (labelZoom != null)
+	{
+		labelZoom.innerHTML = Math.round(simulation.zoom * 100) + "%";
 	}
 }
 
